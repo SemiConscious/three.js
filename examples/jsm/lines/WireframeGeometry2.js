@@ -1,11 +1,11 @@
 import {
 	WireframeGeometry
-} from 'three';
+} from '@semiconscious/three';
 import { LineSegmentsGeometry } from '../lines/LineSegmentsGeometry.js';
 
 class WireframeGeometry2 extends LineSegmentsGeometry {
 
-	constructor( geometry ) {
+	constructor(geometry) {
 
 		super();
 
@@ -13,7 +13,7 @@ class WireframeGeometry2 extends LineSegmentsGeometry {
 
 		this.type = 'WireframeGeometry2';
 
-		this.fromWireframeGeometry( new WireframeGeometry( geometry ) );
+		this.fromWireframeGeometry(new WireframeGeometry(geometry));
 
 		// set colors, maybe
 

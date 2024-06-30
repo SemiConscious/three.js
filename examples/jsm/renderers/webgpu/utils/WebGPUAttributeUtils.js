@@ -1,66 +1,66 @@
-import { Float16BufferAttribute } from 'three';
+import { Float16BufferAttribute } from '@semiconscious/three';
 import { GPUInputStepMode } from './WebGPUConstants.js';
 
-const typedArraysToVertexFormatPrefix = new Map( [
-	[ Int8Array, [ 'sint8', 'snorm8' ]],
-	[ Uint8Array, [ 'uint8', 'unorm8' ]],
-	[ Int16Array, [ 'sint16', 'snorm16' ]],
-	[ Uint16Array, [ 'uint16', 'unorm16' ]],
-	[ Int32Array, [ 'sint32', 'snorm32' ]],
-	[ Uint32Array, [ 'uint32', 'unorm32' ]],
-	[ Float32Array, [ 'float32', ]],
-] );
+const typedArraysToVertexFormatPrefix = new Map([
+	[Int8Array, ['sint8', 'snorm8']],
+	[Uint8Array, ['uint8', 'unorm8']],
+	[Int16Array, ['sint16', 'snorm16']],
+	[Uint16Array, ['uint16', 'unorm16']],
+	[Int32Array, ['sint32', 'snorm32']],
+	[Uint32Array, ['uint32', 'unorm32']],
+	[Float32Array, ['float32',]],
+]);
 
-const typedAttributeToVertexFormatPrefix = new Map( [
-	[ Float16BufferAttribute, [ 'float16', ]],
-] );
+const typedAttributeToVertexFormatPrefix = new Map([
+	[Float16BufferAttribute, ['float16',]],
+]);
 
-const typeArraysToVertexFormatPrefixForItemSize1 = new Map( [
-	[ Int32Array, 'sint32' ],
-	[ Uint32Array, 'uint32' ],
-	[ Float32Array, 'float32' ]
-] );
+const typeArraysToVertexFormatPrefixForItemSize1 = new Map([
+	[Int32Array, 'sint32'],
+	[Uint32Array, 'uint32'],
+	[Float32Array, 'float32']
+]);
 
 class WebGPUAttributeUtils {
 
-	constructor( backend ) {
+	constructor(backend) {
 
 		this.backend = backend;
 
 	}
 
-	createAttribute( attribute, usage ) {
+	createAttribute(attribute, usage) {
 
-		const bufferAttribute = this._getBufferAttribute( attribute );
+		const bufferAttribute = this._getBufferAttribute(attribute);
 
 		const backend = this.backend;
-		const bufferData = backend.get( bufferAttribute );
+		const bufferData = backend.get(bufferAttribute);
 
 		let buffer = bufferData.buffer;
 
-		if ( buffer === undefined ) {
+		if (buffer === undefined) {
 
 			const device = backend.device;
 
 			let array = bufferAttribute.array;
 
-			if ( bufferAttribute.isStorageBufferAttribute && bufferAttribute.itemSize === 3 ) {
+			if (bufferAttribute.isStorageBufferAttribute && bufferAttribute.itemSize === 3) {
 
 				bufferAttribute.itemSize = 4;
-				array = new array.constructor( bufferAttribute.count * 4 );
+				array = new array.constructor(bufferAttribute.count * 4);
 
 			}
 
-			const size = array.byteLength + ( ( 4 - ( array.byteLength % 4 ) ) % 4 ); // ensure 4 byte alignment, see #20441
+			const size = array.byteLength + ((4 - (array.byteLength % 4)) % 4); // ensure 4 byte alignment, see #20441
 
-			buffer = device.createBuffer( {
+			buffer = device.createBuffer({
 				label: bufferAttribute.name,
 				size: size,
 				usage: usage,
 				mappedAtCreation: true
-			} );
+			});
 
-			new array.constructor( buffer.getMappedRange() ).set( array );
+			new array.constructor(buffer.getMappedRange()).set(array);
 
 			buffer.unmap();
 
@@ -70,19 +70,19 @@ class WebGPUAttributeUtils {
 
 	}
 
-	updateAttribute( attribute ) {
+	updateAttribute(attribute) {
 
-		const bufferAttribute = this._getBufferAttribute( attribute );
+		const bufferAttribute = this._getBufferAttribute(attribute);
 
 		const backend = this.backend;
 		const device = backend.device;
 
-		const buffer = backend.get( bufferAttribute ).buffer;
+		const buffer = backend.get(bufferAttribute).buffer;
 
 		const array = bufferAttribute.array;
 		const updateRanges = bufferAttribute.updateRanges;
 
-		if ( updateRanges.length === 0 ) {
+		if (updateRanges.length === 0) {
 
 			// Not using update ranges
 
@@ -95,9 +95,9 @@ class WebGPUAttributeUtils {
 
 		} else {
 
-			for ( let i = 0, l = updateRanges.length; i < l; i ++ ) {
+			for (let i = 0, l = updateRanges.length; i < l; i++) {
 
-				const range = updateRanges[ i ];
+				const range = updateRanges[i];
 				device.queue.writeBuffer(
 					buffer,
 					0,
@@ -114,24 +114,24 @@ class WebGPUAttributeUtils {
 
 	}
 
-	createShaderVertexBuffers( renderObject ) {
+	createShaderVertexBuffers(renderObject) {
 
 		const attributes = renderObject.getAttributes();
 		const vertexBuffers = new Map();
 
-		for ( let slot = 0; slot < attributes.length; slot ++ ) {
+		for (let slot = 0; slot < attributes.length; slot++) {
 
-			const geometryAttribute = attributes[ slot ];
+			const geometryAttribute = attributes[slot];
 			const bytesPerElement = geometryAttribute.array.BYTES_PER_ELEMENT;
-			const bufferAttribute = this._getBufferAttribute( geometryAttribute );
+			const bufferAttribute = this._getBufferAttribute(geometryAttribute);
 
-			let vertexBufferLayout = vertexBuffers.get( bufferAttribute );
+			let vertexBufferLayout = vertexBuffers.get(bufferAttribute);
 
-			if ( vertexBufferLayout === undefined ) {
+			if (vertexBufferLayout === undefined) {
 
 				let arrayStride, stepMode;
 
-				if ( geometryAttribute.isInterleavedBufferAttribute === true ) {
+				if (geometryAttribute.isInterleavedBufferAttribute === true) {
 
 					arrayStride = geometryAttribute.data.stride * bytesPerElement;
 					stepMode = geometryAttribute.data.isInstancedInterleavedBuffer ? GPUInputStepMode.Instance : GPUInputStepMode.Vertex;
@@ -149,42 +149,42 @@ class WebGPUAttributeUtils {
 					stepMode
 				};
 
-				vertexBuffers.set( bufferAttribute, vertexBufferLayout );
+				vertexBuffers.set(bufferAttribute, vertexBufferLayout);
 
 			}
 
-			const format = this._getVertexFormat( geometryAttribute );
-			const offset = ( geometryAttribute.isInterleavedBufferAttribute === true ) ? geometryAttribute.offset * bytesPerElement : 0;
+			const format = this._getVertexFormat(geometryAttribute);
+			const offset = (geometryAttribute.isInterleavedBufferAttribute === true) ? geometryAttribute.offset * bytesPerElement : 0;
 
-			vertexBufferLayout.attributes.push( {
+			vertexBufferLayout.attributes.push({
 				shaderLocation: slot,
 				offset,
 				format
-			} );
+			});
 
 		}
 
-		return Array.from( vertexBuffers.values() );
+		return Array.from(vertexBuffers.values());
 
 	}
 
-	destroyAttribute( attribute ) {
+	destroyAttribute(attribute) {
 
 		const backend = this.backend;
-		const data = backend.get( this._getBufferAttribute( attribute ) );
+		const data = backend.get(this._getBufferAttribute(attribute));
 
 		data.buffer.destroy();
 
-		backend.delete( attribute );
+		backend.delete(attribute);
 
 	}
 
-	async getArrayBufferAsync( attribute ) {
+	async getArrayBufferAsync(attribute) {
 
 		const backend = this.backend;
 		const device = backend.device;
 
-		const data = backend.get( this._getBufferAttribute( attribute ) );
+		const data = backend.get(this._getBufferAttribute(attribute));
 
 		const bufferGPU = data.buffer;
 		const size = bufferGPU.size;
@@ -192,13 +192,13 @@ class WebGPUAttributeUtils {
 		let readBufferGPU = data.readBuffer;
 		let needsUnmap = true;
 
-		if ( readBufferGPU === undefined ) {
+		if (readBufferGPU === undefined) {
 
-			readBufferGPU = device.createBuffer( {
+			readBufferGPU = device.createBuffer({
 				label: attribute.name,
 				size,
 				usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
-			} );
+			});
 
 			needsUnmap = false;
 
@@ -206,7 +206,7 @@ class WebGPUAttributeUtils {
 
 		}
 
-		const cmdEncoder = device.createCommandEncoder( {} );
+		const cmdEncoder = device.createCommandEncoder({});
 
 		cmdEncoder.copyBufferToBuffer(
 			bufferGPU,
@@ -216,12 +216,12 @@ class WebGPUAttributeUtils {
 			size
 		);
 
-		if ( needsUnmap ) readBufferGPU.unmap();
+		if (needsUnmap) readBufferGPU.unmap();
 
 		const gpuCommands = cmdEncoder.finish();
-		device.queue.submit( [ gpuCommands ] );
+		device.queue.submit([gpuCommands]);
 
-		await readBufferGPU.mapAsync( GPUMapMode.READ );
+		await readBufferGPU.mapAsync(GPUMapMode.READ);
 
 		const arrayBuffer = readBufferGPU.getMappedRange();
 
@@ -229,7 +229,7 @@ class WebGPUAttributeUtils {
 
 	}
 
-	_getVertexFormat( geometryAttribute ) {
+	_getVertexFormat(geometryAttribute) {
 
 		const { itemSize, normalized } = geometryAttribute;
 		const ArrayType = geometryAttribute.array.constructor;
@@ -237,24 +237,24 @@ class WebGPUAttributeUtils {
 
 		let format;
 
-		if ( itemSize == 1 ) {
+		if (itemSize == 1) {
 
-			format = typeArraysToVertexFormatPrefixForItemSize1.get( ArrayType );
+			format = typeArraysToVertexFormatPrefixForItemSize1.get(ArrayType);
 
 		} else {
 
-			const prefixOptions = typedAttributeToVertexFormatPrefix.get( AttributeType ) || typedArraysToVertexFormatPrefix.get( ArrayType );
-			const prefix = prefixOptions[ normalized ? 1 : 0 ];
+			const prefixOptions = typedAttributeToVertexFormatPrefix.get(AttributeType) || typedArraysToVertexFormatPrefix.get(ArrayType);
+			const prefix = prefixOptions[normalized ? 1 : 0];
 
-			if ( prefix ) {
+			if (prefix) {
 
 				const bytesPerUnit = ArrayType.BYTES_PER_ELEMENT * itemSize;
-				const paddedBytesPerUnit = Math.floor( ( bytesPerUnit + 3 ) / 4 ) * 4;
+				const paddedBytesPerUnit = Math.floor((bytesPerUnit + 3) / 4) * 4;
 				const paddedItemSize = paddedBytesPerUnit / ArrayType.BYTES_PER_ELEMENT;
 
-				if ( paddedItemSize % 1 ) {
+				if (paddedItemSize % 1) {
 
-					throw new Error( 'THREE.WebGPUAttributeUtils: Bad vertex format item size.' );
+					throw new Error('THREE.WebGPUAttributeUtils: Bad vertex format item size.');
 
 				}
 
@@ -264,9 +264,9 @@ class WebGPUAttributeUtils {
 
 		}
 
-		if ( ! format ) {
+		if (!format) {
 
-			console.error( 'THREE.WebGPUAttributeUtils: Vertex format not supported yet.' );
+			console.error('THREE.WebGPUAttributeUtils: Vertex format not supported yet.');
 
 		}
 
@@ -274,9 +274,9 @@ class WebGPUAttributeUtils {
 
 	}
 
-	_getBufferAttribute( attribute ) {
+	_getBufferAttribute(attribute) {
 
-		if ( attribute.isInterleavedBufferAttribute ) attribute = attribute.data;
+		if (attribute.isInterleavedBufferAttribute) attribute = attribute.data;
 
 		return attribute;
 

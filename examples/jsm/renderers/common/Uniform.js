@@ -1,8 +1,8 @@
-import { Color, Matrix3, Matrix4, Vector2, Vector3, Vector4 } from 'three';
+import { Color, Matrix3, Matrix4, Vector2, Vector3, Vector4 } from '@semiconscious/three';
 
 class Uniform {
 
-	constructor( name, value = null ) {
+	constructor(name, value = null) {
 
 		this.name = name;
 		this.value = value;
@@ -14,7 +14,7 @@ class Uniform {
 
 	}
 
-	setValue( value ) {
+	setValue(value) {
 
 		this.value = value;
 
@@ -30,9 +30,9 @@ class Uniform {
 
 class FloatUniform extends Uniform {
 
-	constructor( name, value = 0 ) {
+	constructor(name, value = 0) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isFloatUniform = true;
 
@@ -45,9 +45,9 @@ class FloatUniform extends Uniform {
 
 class Vector2Uniform extends Uniform {
 
-	constructor( name, value = new Vector2() ) {
+	constructor(name, value = new Vector2()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isVector2Uniform = true;
 
@@ -60,9 +60,9 @@ class Vector2Uniform extends Uniform {
 
 class Vector3Uniform extends Uniform {
 
-	constructor( name, value = new Vector3() ) {
+	constructor(name, value = new Vector3()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isVector3Uniform = true;
 
@@ -75,9 +75,9 @@ class Vector3Uniform extends Uniform {
 
 class Vector4Uniform extends Uniform {
 
-	constructor( name, value = new Vector4() ) {
+	constructor(name, value = new Vector4()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isVector4Uniform = true;
 
@@ -90,9 +90,9 @@ class Vector4Uniform extends Uniform {
 
 class ColorUniform extends Uniform {
 
-	constructor( name, value = new Color() ) {
+	constructor(name, value = new Color()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isColorUniform = true;
 
@@ -105,9 +105,9 @@ class ColorUniform extends Uniform {
 
 class Matrix3Uniform extends Uniform {
 
-	constructor( name, value = new Matrix3() ) {
+	constructor(name, value = new Matrix3()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isMatrix3Uniform = true;
 
@@ -120,9 +120,9 @@ class Matrix3Uniform extends Uniform {
 
 class Matrix4Uniform extends Uniform {
 
-	constructor( name, value = new Matrix4() ) {
+	constructor(name, value = new Matrix4()) {
 
-		super( name, value );
+		super(name, value);
 
 		this.isMatrix4Uniform = true;
 

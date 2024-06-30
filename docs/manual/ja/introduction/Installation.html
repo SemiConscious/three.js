@@ -39,13 +39,13 @@
 
     <code>
 		// Option 1: Import the entire three.js core library.
-		import * as THREE from 'three';
+		import * as THREE from '@semiconscious/three';
 
 		const scene = new THREE.Scene();
 
 
 		// Option 2: Import just the parts you need.
-		import { Scene } from 'three';
+		import { Scene } from '@semiconscious/three';
 
 		const scene = new Scene();
 		</code>
@@ -79,7 +79,7 @@
 
 &lt;script type="module">
 
-    import * as THREE from 'three';
+    import * as THREE from '@semiconscious/three';
 
     const scene = new THREE.Scene();
 
@@ -119,7 +119,7 @@
 
 &lt;script type="module">
 
-    import * as THREE from 'three';
+    import * as THREE from '@semiconscious/three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     const controls = new OrbitControls( camera, renderer.domElement );
@@ -142,11 +142,11 @@
     <h3>Import maps</h3>
 
     <p>
-        npmからインストールする時と、静的ホスティングやCDN からインストールする時とでは、インポートに使用するパスが異なります。これは、両方のグループのユーザーが、どういったものを使いやすいと感じるかが異なるために起こります。ビルドツールやバンドルを使用している開発者は、相対パスよりも裸のパッケージ指定子(例えば、'three')を好み、<em>examples/</em> フォルダ内のファイルは、この形式に従わない <em>three.module.js</em> への相対参照を使用しています。ビルドツールを使用しない人（高速プロトタイピング、学習、個人的な好みなど）は、同様に、特定のフォルダ構造を必要とし、グローバルな<em>three.*</em>名前空間よりも厳密な相対インポートを嫌うかもしれません。
+        npmからインストールする時と、静的ホスティングやCDN からインストールする時とでは、インポートに使用するパスが異なります。これは、両方のグループのユーザーが、どういったものを使いやすいと感じるかが異なるために起こります。ビルドツールやバンドルを使用している開発者は、相対パスよりも裸のパッケージ指定子(例えば、'@semiconscious/three')を好み、<em>examples/</em> フォルダ内のファイルは、この形式に従わない <em>three.module.js</em> への相対参照を使用しています。ビルドツールを使用しない人（高速プロトタイピング、学習、個人的な好みなど）は、同様に、特定のフォルダ構造を必要とし、グローバルな<em>three.*</em>名前空間よりも厳密な相対インポートを嫌うかもしれません。
     </p>
 
     <p>
-        [link:https://github.com/WICG/import-maps import maps] が広く利用できるようになったら、これらの相対パスを削除して、npm パッケージ名の 'three' への裸のパッケージ指定子に置き換えたいと考えています。これにより、ビルドツールが期待するnpmパッケージとより密接にマッチし、ファイルをインポートする際に両グループのユーザが全く同じコードを書くことができるようになります。ビルドツールを避けたいユーザーのために、シンプルなJSONマッピングですべてのインポートをCDNや静的ファイルフォルダに向けることができます。試しに、私たちの
+        [link:https://github.com/WICG/import-maps import maps] が広く利用できるようになったら、これらの相対パスを削除して、npm パッケージ名の '@semiconscious/three' への裸のパッケージ指定子に置き換えたいと考えています。これにより、ビルドツールが期待するnpmパッケージとより密接にマッチし、ファイルをインポートする際に両グループのユーザが全く同じコードを書くことができるようになります。ビルドツールを避けたいユーザーのために、シンプルなJSONマッピングですべてのインポートをCDNや静的ファイルフォルダに向けることができます。試しに、私たちの
         [link:https://glitch.com/edit/#!/three-import-map?path=index.html import map example] で示されているように、import mapsのPolyfillを使って、今日はよりシンプルなインポートを使ってみることができます。
     </p>
 

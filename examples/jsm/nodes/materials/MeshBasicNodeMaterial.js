@@ -1,12 +1,12 @@
 import NodeMaterial, { addNodeMaterial } from './NodeMaterial.js';
 
-import { MeshBasicMaterial } from 'three';
+import { MeshBasicMaterial } from '@semiconscious/three';
 
 const defaultValues = new MeshBasicMaterial();
 
 class MeshBasicNodeMaterial extends NodeMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -15,9 +15,9 @@ class MeshBasicNodeMaterial extends NodeMaterial {
 		this.lights = false;
 		//this.normals = false; @TODO: normals usage by context
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
@@ -25,4 +25,4 @@ class MeshBasicNodeMaterial extends NodeMaterial {
 
 export default MeshBasicNodeMaterial;
 
-addNodeMaterial( 'MeshBasicNodeMaterial', MeshBasicNodeMaterial );
+addNodeMaterial('MeshBasicNodeMaterial', MeshBasicNodeMaterial);

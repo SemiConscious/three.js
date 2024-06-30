@@ -2,27 +2,27 @@ import {
 	DataTextureLoader,
 	LinearFilter,
 	LinearMipmapLinearFilter
-} from 'three';
+} from '@semiconscious/three';
 
 import UTIF from '../libs/utif.module.js';
 
 class TIFFLoader extends DataTextureLoader {
 
-	constructor( manager ) {
+	constructor(manager) {
 
-		super( manager );
+		super(manager);
 
 	}
 
-	parse( buffer ) {
+	parse(buffer) {
 
-		const ifds = UTIF.decode( buffer );
-		UTIF.decodeImage( buffer, ifds[ 0 ] );
-		const rgba = UTIF.toRGBA8( ifds[ 0 ] );
+		const ifds = UTIF.decode(buffer);
+		UTIF.decodeImage(buffer, ifds[0]);
+		const rgba = UTIF.toRGBA8(ifds[0]);
 
 		return {
-			width: ifds[ 0 ].width,
-			height: ifds[ 0 ].height,
+			width: ifds[0].width,
+			height: ifds[0].height,
 			data: rgba,
 			flipY: true,
 			magFilter: LinearFilter,

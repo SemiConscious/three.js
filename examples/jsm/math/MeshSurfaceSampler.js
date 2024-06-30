@@ -2,7 +2,7 @@ import {
 	Triangle,
 	Vector2,
 	Vector3
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Utility class for sampling weighted random points on the surface of a mesh.
@@ -21,25 +21,25 @@ const _uva = new Vector2(), _uvb = new Vector2(), _uvc = new Vector2();
 
 class MeshSurfaceSampler {
 
-	constructor( mesh ) {
+	constructor(mesh) {
 
 		this.geometry = mesh.geometry;
 		this.randomFunction = Math.random;
 
 		this.indexAttribute = this.geometry.index;
-		this.positionAttribute = this.geometry.getAttribute( 'position' );
-		this.normalAttribute = this.geometry.getAttribute( 'normal' );
-		this.colorAttribute = this.geometry.getAttribute( 'color' );
-		this.uvAttribute = this.geometry.getAttribute( 'uv' );
+		this.positionAttribute = this.geometry.getAttribute('position');
+		this.normalAttribute = this.geometry.getAttribute('normal');
+		this.colorAttribute = this.geometry.getAttribute('color');
+		this.uvAttribute = this.geometry.getAttribute('uv');
 		this.weightAttribute = null;
 
 		this.distribution = null;
 
 	}
 
-	setWeightAttribute( name ) {
+	setWeightAttribute(name) {
 
-		this.weightAttribute = name ? this.geometry.getAttribute( name ) : null;
+		this.weightAttribute = name ? this.geometry.getAttribute(name) : null;
 
 		return this;
 
@@ -51,12 +51,12 @@ class MeshSurfaceSampler {
 		const positionAttribute = this.positionAttribute;
 		const weightAttribute = this.weightAttribute;
 
-		const totalFaces = indexAttribute ? ( indexAttribute.count / 3 ) : ( positionAttribute.count / 3 );
-		const faceWeights = new Float32Array( totalFaces );
+		const totalFaces = indexAttribute ? (indexAttribute.count / 3) : (positionAttribute.count / 3);
+		const faceWeights = new Float32Array(totalFaces);
 
 		// Accumulate weights for each mesh face.
 
-		for ( let i = 0; i < totalFaces; i ++ ) {
+		for (let i = 0; i < totalFaces; i++) {
 
 			let faceWeight = 1;
 
@@ -64,41 +64,41 @@ class MeshSurfaceSampler {
 			let i1 = 3 * i + 1;
 			let i2 = 3 * i + 2;
 
-			if ( indexAttribute ) {
+			if (indexAttribute) {
 
-				i0 = indexAttribute.getX( i0 );
-				i1 = indexAttribute.getX( i1 );
-				i2 = indexAttribute.getX( i2 );
-
-			}
-
-			if ( weightAttribute ) {
-
-				faceWeight = weightAttribute.getX( i0 )
-					+ weightAttribute.getX( i1 )
-					+ weightAttribute.getX( i2 );
+				i0 = indexAttribute.getX(i0);
+				i1 = indexAttribute.getX(i1);
+				i2 = indexAttribute.getX(i2);
 
 			}
 
-			_face.a.fromBufferAttribute( positionAttribute, i0 );
-			_face.b.fromBufferAttribute( positionAttribute, i1 );
-			_face.c.fromBufferAttribute( positionAttribute, i2 );
+			if (weightAttribute) {
+
+				faceWeight = weightAttribute.getX(i0)
+					+ weightAttribute.getX(i1)
+					+ weightAttribute.getX(i2);
+
+			}
+
+			_face.a.fromBufferAttribute(positionAttribute, i0);
+			_face.b.fromBufferAttribute(positionAttribute, i1);
+			_face.c.fromBufferAttribute(positionAttribute, i2);
 			faceWeight *= _face.getArea();
 
-			faceWeights[ i ] = faceWeight;
+			faceWeights[i] = faceWeight;
 
 		}
 
 		// Store cumulative total face weights in an array, where weight index
 		// corresponds to face index.
 
-		const distribution = new Float32Array( totalFaces );
+		const distribution = new Float32Array(totalFaces);
 		let cumulativeTotal = 0;
 
-		for ( let i = 0; i < totalFaces; i ++ ) {
+		for (let i = 0; i < totalFaces; i++) {
 
-			cumulativeTotal += faceWeights[ i ];
-			distribution[ i ] = cumulativeTotal;
+			cumulativeTotal += faceWeights[i];
+			distribution[i] = cumulativeTotal;
 
 		}
 
@@ -107,28 +107,28 @@ class MeshSurfaceSampler {
 
 	}
 
-	setRandomGenerator( randomFunction ) {
+	setRandomGenerator(randomFunction) {
 
 		this.randomFunction = randomFunction;
 		return this;
 
 	}
 
-	sample( targetPosition, targetNormal, targetColor, targetUV ) {
+	sample(targetPosition, targetNormal, targetColor, targetUV) {
 
 		const faceIndex = this.sampleFaceIndex();
-		return this.sampleFace( faceIndex, targetPosition, targetNormal, targetColor, targetUV );
+		return this.sampleFace(faceIndex, targetPosition, targetNormal, targetColor, targetUV);
 
 	}
 
 	sampleFaceIndex() {
 
-		const cumulativeTotal = this.distribution[ this.distribution.length - 1 ];
-		return this.binarySearch( this.randomFunction() * cumulativeTotal );
+		const cumulativeTotal = this.distribution[this.distribution.length - 1];
+		return this.binarySearch(this.randomFunction() * cumulativeTotal);
 
 	}
 
-	binarySearch( x ) {
+	binarySearch(x) {
 
 		const dist = this.distribution;
 		let start = 0;
@@ -136,17 +136,17 @@ class MeshSurfaceSampler {
 
 		let index = - 1;
 
-		while ( start <= end ) {
+		while (start <= end) {
 
-			const mid = Math.ceil( ( start + end ) / 2 );
+			const mid = Math.ceil((start + end) / 2);
 
-			if ( mid === 0 || dist[ mid - 1 ] <= x && dist[ mid ] > x ) {
+			if (mid === 0 || dist[mid - 1] <= x && dist[mid] > x) {
 
 				index = mid;
 
 				break;
 
-			} else if ( x < dist[ mid ] ) {
+			} else if (x < dist[mid]) {
 
 				end = mid - 1;
 
@@ -162,12 +162,12 @@ class MeshSurfaceSampler {
 
 	}
 
-	sampleFace( faceIndex, targetPosition, targetNormal, targetColor, targetUV ) {
+	sampleFace(faceIndex, targetPosition, targetNormal, targetColor, targetUV) {
 
 		let u = this.randomFunction();
 		let v = this.randomFunction();
 
-		if ( u + v > 1 ) {
+		if (u + v > 1) {
 
 			u = 1 - u;
 			v = 1 - v;
@@ -179,52 +179,52 @@ class MeshSurfaceSampler {
 		let i0 = faceIndex * 3;
 		let i1 = faceIndex * 3 + 1;
 		let i2 = faceIndex * 3 + 2;
-		if ( indexAttribute ) {
+		if (indexAttribute) {
 
-			i0 = indexAttribute.getX( i0 );
-			i1 = indexAttribute.getX( i1 );
-			i2 = indexAttribute.getX( i2 );
+			i0 = indexAttribute.getX(i0);
+			i1 = indexAttribute.getX(i1);
+			i2 = indexAttribute.getX(i2);
 
 		}
 
-		_face.a.fromBufferAttribute( this.positionAttribute, i0 );
-		_face.b.fromBufferAttribute( this.positionAttribute, i1 );
-		_face.c.fromBufferAttribute( this.positionAttribute, i2 );
+		_face.a.fromBufferAttribute(this.positionAttribute, i0);
+		_face.b.fromBufferAttribute(this.positionAttribute, i1);
+		_face.c.fromBufferAttribute(this.positionAttribute, i2);
 
 		targetPosition
-			.set( 0, 0, 0 )
-			.addScaledVector( _face.a, u )
-			.addScaledVector( _face.b, v )
-			.addScaledVector( _face.c, 1 - ( u + v ) );
+			.set(0, 0, 0)
+			.addScaledVector(_face.a, u)
+			.addScaledVector(_face.b, v)
+			.addScaledVector(_face.c, 1 - (u + v));
 
-		if ( targetNormal !== undefined ) {
+		if (targetNormal !== undefined) {
 
-			if ( this.normalAttribute !== undefined ) {
+			if (this.normalAttribute !== undefined) {
 
-				_face.a.fromBufferAttribute( this.normalAttribute, i0 );
-				_face.b.fromBufferAttribute( this.normalAttribute, i1 );
-				_face.c.fromBufferAttribute( this.normalAttribute, i2 );
-				targetNormal.set( 0, 0, 0 ).addScaledVector( _face.a, u ).addScaledVector( _face.b, v ).addScaledVector( _face.c, 1 - ( u + v ) ).normalize();
+				_face.a.fromBufferAttribute(this.normalAttribute, i0);
+				_face.b.fromBufferAttribute(this.normalAttribute, i1);
+				_face.c.fromBufferAttribute(this.normalAttribute, i2);
+				targetNormal.set(0, 0, 0).addScaledVector(_face.a, u).addScaledVector(_face.b, v).addScaledVector(_face.c, 1 - (u + v)).normalize();
 
 			} else {
 
-				_face.getNormal( targetNormal );
+				_face.getNormal(targetNormal);
 
 			}
 
 		}
 
-		if ( targetColor !== undefined && this.colorAttribute !== undefined ) {
+		if (targetColor !== undefined && this.colorAttribute !== undefined) {
 
-			_face.a.fromBufferAttribute( this.colorAttribute, i0 );
-			_face.b.fromBufferAttribute( this.colorAttribute, i1 );
-			_face.c.fromBufferAttribute( this.colorAttribute, i2 );
+			_face.a.fromBufferAttribute(this.colorAttribute, i0);
+			_face.b.fromBufferAttribute(this.colorAttribute, i1);
+			_face.c.fromBufferAttribute(this.colorAttribute, i2);
 
 			_color
-				.set( 0, 0, 0 )
-				.addScaledVector( _face.a, u )
-				.addScaledVector( _face.b, v )
-				.addScaledVector( _face.c, 1 - ( u + v ) );
+				.set(0, 0, 0)
+				.addScaledVector(_face.a, u)
+				.addScaledVector(_face.b, v)
+				.addScaledVector(_face.c, 1 - (u + v));
 
 			targetColor.r = _color.x;
 			targetColor.g = _color.y;
@@ -232,12 +232,12 @@ class MeshSurfaceSampler {
 
 		}
 
-		if ( targetUV !== undefined && this.uvAttribute !== undefined ) {
+		if (targetUV !== undefined && this.uvAttribute !== undefined) {
 
-			_uva.fromBufferAttribute( this.uvAttribute, i0 );
-			_uvb.fromBufferAttribute( this.uvAttribute, i1 );
-			_uvc.fromBufferAttribute( this.uvAttribute, i2 );
-			targetUV.set( 0, 0 ).addScaledVector( _uva, u ).addScaledVector( _uvb, v ).addScaledVector( _uvc, 1 - ( u + v ) );
+			_uva.fromBufferAttribute(this.uvAttribute, i0);
+			_uvb.fromBufferAttribute(this.uvAttribute, i1);
+			_uvc.fromBufferAttribute(this.uvAttribute, i2);
+			targetUV.set(0, 0).addScaledVector(_uva, u).addScaledVector(_uvb, v).addScaledVector(_uvc, 1 - (u + v));
 
 		}
 

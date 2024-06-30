@@ -1,8 +1,8 @@
-import { Texture, LinearFilter } from 'three';
+import { Texture, LinearFilter } from '@semiconscious/three';
 
 class StorageTexture extends Texture {
 
-	constructor( width = 1, height = 1 ) {
+	constructor(width = 1, height = 1) {
 
 		super();
 

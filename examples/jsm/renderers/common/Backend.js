@@ -3,20 +3,20 @@ let vector4 = null;
 let color4 = null;
 
 import Color4 from './Color4.js';
-import { Vector2, Vector4, REVISION, createCanvasElement } from 'three';
+import { Vector2, Vector4, REVISION, createCanvasElement } from '@semiconscious/three';
 
 class Backend {
 
-	constructor( parameters = {} ) {
+	constructor(parameters = {}) {
 
-		this.parameters = Object.assign( {}, parameters );
+		this.parameters = Object.assign({}, parameters);
 		this.data = new WeakMap();
 		this.renderer = null;
 		this.domElement = null;
 
 	}
 
-	async init( renderer ) {
+	async init(renderer) {
 
 		this.renderer = renderer;
 
@@ -24,63 +24,63 @@ class Backend {
 
 	// render context
 
-	begin( renderContext ) { }
+	begin(renderContext) { }
 
-	finish( renderContext ) { }
+	finish(renderContext) { }
 
 	// render object
 
-	draw( renderObject, info ) { }
+	draw(renderObject, info) { }
 
 	// program
 
-	createProgram( program ) { }
+	createProgram(program) { }
 
-	destroyProgram( program ) { }
+	destroyProgram(program) { }
 
 	// bindings
 
-	createBindings( renderObject ) { }
+	createBindings(renderObject) { }
 
-	updateBindings( renderObject ) { }
+	updateBindings(renderObject) { }
 
 	// pipeline
 
-	createRenderPipeline( renderObject ) { }
+	createRenderPipeline(renderObject) { }
 
-	createComputePipeline( computeNode, pipeline ) { }
+	createComputePipeline(computeNode, pipeline) { }
 
-	destroyPipeline( pipeline ) { }
+	destroyPipeline(pipeline) { }
 
 	// cache key
 
-	needsRenderUpdate( renderObject ) { } // return Boolean ( fast test )
+	needsRenderUpdate(renderObject) { } // return Boolean ( fast test )
 
-	getRenderCacheKey( renderObject ) { } // return String
+	getRenderCacheKey(renderObject) { } // return String
 
 	// node builder
 
-	createNodeBuilder( renderObject ) { } // return NodeBuilder (ADD IT)
+	createNodeBuilder(renderObject) { } // return NodeBuilder (ADD IT)
 
 	// textures
 
-	createSampler( texture ) { }
+	createSampler(texture) { }
 
-	createDefaultTexture( texture ) { }
+	createDefaultTexture(texture) { }
 
-	createTexture( texture ) { }
+	createTexture(texture) { }
 
-	copyTextureToBuffer( texture, x, y, width, height ) {}
+	copyTextureToBuffer(texture, x, y, width, height) { }
 
 	// attributes
 
-	createAttribute( attribute ) { }
+	createAttribute(attribute) { }
 
-	createIndexAttribute( attribute ) { }
+	createIndexAttribute(attribute) { }
 
-	updateAttribute( attribute ) { }
+	updateAttribute(attribute) { }
 
-	destroyAttribute( attribute ) { }
+	destroyAttribute(attribute) { }
 
 	// canvas
 
@@ -90,17 +90,17 @@ class Backend {
 
 	// utils
 
-	resolveTimestampAsync( renderContext, type ) { }
+	resolveTimestampAsync(renderContext, type) { }
 
-	hasFeatureAsync( name ) { } // return Boolean
+	hasFeatureAsync(name) { } // return Boolean
 
-	hasFeature( name ) { } // return Boolean
+	hasFeature(name) { } // return Boolean
 
-	getInstanceCount( renderObject ) {
+	getInstanceCount(renderObject) {
 
 		const { object, geometry } = renderObject;
 
-		return geometry.isInstancedBufferGeometry ? geometry.instanceCount : ( object.isInstancedMesh ? object.count : 1 );
+		return geometry.isInstancedBufferGeometry ? geometry.instanceCount : (object.isInstancedMesh ? object.count : 1);
 
 	}
 
@@ -108,7 +108,7 @@ class Backend {
 
 		vector2 = vector2 || new Vector2();
 
-		return this.renderer.getDrawingBufferSize( vector2 );
+		return this.renderer.getDrawingBufferSize(vector2);
 
 	}
 
@@ -116,11 +116,11 @@ class Backend {
 
 		vector4 = vector4 || new Vector4();
 
-		return this.renderer.getScissor( vector4 );
+		return this.renderer.getScissor(vector4);
 
 	}
 
-	setScissorTest( boolean ) { }
+	setScissorTest(boolean) { }
 
 	getClearColor() {
 
@@ -128,9 +128,9 @@ class Backend {
 
 		color4 = color4 || new Color4();
 
-		renderer.getClearColor( color4 );
+		renderer.getClearColor(color4);
 
-		color4.getRGB( color4, this.renderer.currentColorSpace );
+		color4.getRGB(color4, this.renderer.currentColorSpace);
 
 		return color4;
 
@@ -140,12 +140,12 @@ class Backend {
 
 		let domElement = this.domElement;
 
-		if ( domElement === null ) {
+		if (domElement === null) {
 
-			domElement = ( this.parameters.canvas !== undefined ) ? this.parameters.canvas : createCanvasElement();
+			domElement = (this.parameters.canvas !== undefined) ? this.parameters.canvas : createCanvasElement();
 
 			// OffscreenCanvas does not have setAttribute, see #22811
-			if ( 'setAttribute' in domElement ) domElement.setAttribute( 'data-engine', `three.js r${REVISION} webgpu` );
+			if ('setAttribute' in domElement) domElement.setAttribute('data-engine', `three.js r${REVISION} webgpu`);
 
 			this.domElement = domElement;
 
@@ -157,20 +157,20 @@ class Backend {
 
 	// resource properties
 
-	set( object, value ) {
+	set(object, value) {
 
-		this.data.set( object, value );
+		this.data.set(object, value);
 
 	}
 
-	get( object ) {
+	get(object) {
 
-		let map = this.data.get( object );
+		let map = this.data.get(object);
 
-		if ( map === undefined ) {
+		if (map === undefined) {
 
 			map = {};
-			this.data.set( object, map );
+			this.data.set(object, map);
 
 		}
 
@@ -178,15 +178,15 @@ class Backend {
 
 	}
 
-	has( object ) {
+	has(object) {
 
-		return this.data.has( object );
+		return this.data.has(object);
 
 	}
 
-	delete( object ) {
+	delete(object) {
 
-		this.data.delete( object );
+		this.data.delete(object);
 
 	}
 

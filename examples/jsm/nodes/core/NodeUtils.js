@@ -1,18 +1,18 @@
-import { Color, Matrix3, Matrix4, Vector2, Vector3, Vector4 } from 'three';
+import { Color, Matrix3, Matrix4, Vector2, Vector3, Vector4 } from '@semiconscious/three';
 
-export function getCacheKey( object ) {
+export function getCacheKey(object) {
 
 	let cacheKey = '{';
 
-	if ( object.isNode === true ) {
+	if (object.isNode === true) {
 
 		cacheKey += object.id;
 
 	}
 
-	for ( const { property, childNode } of getNodeChildren( object ) ) {
+	for (const { property, childNode } of getNodeChildren(object)) {
 
-		cacheKey += ',' + property.slice( 0, - 4 ) + ':' + childNode.getCacheKey();
+		cacheKey += ',' + property.slice(0, - 4) + ':' + childNode.getCacheKey();
 
 	}
 
@@ -22,22 +22,22 @@ export function getCacheKey( object ) {
 
 }
 
-export function* getNodeChildren( node, toJSON = false ) {
+export function* getNodeChildren(node, toJSON = false) {
 
-	for ( const property in node ) {
+	for (const property in node) {
 
 		// Ignore private properties.
-		if ( property.startsWith( '_' ) === true ) continue;
+		if (property.startsWith('_') === true) continue;
 
-		const object = node[ property ];
+		const object = node[property];
 
-		if ( Array.isArray( object ) === true ) {
+		if (Array.isArray(object) === true) {
 
-			for ( let i = 0; i < object.length; i ++ ) {
+			for (let i = 0; i < object.length; i++) {
 
-				const child = object[ i ];
+				const child = object[i];
 
-				if ( child && ( child.isNode === true || toJSON && typeof child.toJSON === 'function' ) ) {
+				if (child && (child.isNode === true || toJSON && typeof child.toJSON === 'function')) {
 
 					yield { property, index: i, childNode: child };
 
@@ -45,17 +45,17 @@ export function* getNodeChildren( node, toJSON = false ) {
 
 			}
 
-		} else if ( object && object.isNode === true ) {
+		} else if (object && object.isNode === true) {
 
 			yield { property, childNode: object };
 
-		} else if ( typeof object === 'object' ) {
+		} else if (typeof object === 'object') {
 
-			for ( const subProperty in object ) {
+			for (const subProperty in object) {
 
-				const child = object[ subProperty ];
+				const child = object[subProperty];
 
-				if ( child && ( child.isNode === true || toJSON && typeof child.toJSON === 'function' ) ) {
+				if (child && (child.isNode === true || toJSON && typeof child.toJSON === 'function')) {
 
 					yield { property, index: subProperty, childNode: child };
 
@@ -69,57 +69,57 @@ export function* getNodeChildren( node, toJSON = false ) {
 
 }
 
-export function getValueType( value ) {
+export function getValueType(value) {
 
-	if ( value === undefined || value === null ) return null;
+	if (value === undefined || value === null) return null;
 
 	const typeOf = typeof value;
 
-	if ( value.isNode === true ) {
+	if (value.isNode === true) {
 
 		return 'node';
 
-	} else if ( typeOf === 'number' ) {
+	} else if (typeOf === 'number') {
 
 		return 'float';
 
-	} else if ( typeOf === 'boolean' ) {
+	} else if (typeOf === 'boolean') {
 
 		return 'bool';
 
-	} else if ( typeOf === 'string' ) {
+	} else if (typeOf === 'string') {
 
 		return 'string';
 
-	} else if ( typeOf === 'function' ) {
+	} else if (typeOf === 'function') {
 
 		return 'shader';
 
-	} else if ( value.isVector2 === true ) {
+	} else if (value.isVector2 === true) {
 
 		return 'vec2';
 
-	} else if ( value.isVector3 === true ) {
+	} else if (value.isVector3 === true) {
 
 		return 'vec3';
 
-	} else if ( value.isVector4 === true ) {
+	} else if (value.isVector4 === true) {
 
 		return 'vec4';
 
-	} else if ( value.isMatrix3 === true ) {
+	} else if (value.isMatrix3 === true) {
 
 		return 'mat3';
 
-	} else if ( value.isMatrix4 === true ) {
+	} else if (value.isMatrix4 === true) {
 
 		return 'mat4';
 
-	} else if ( value.isColor === true ) {
+	} else if (value.isColor === true) {
 
 		return 'color';
 
-	} else if ( value instanceof ArrayBuffer ) {
+	} else if (value instanceof ArrayBuffer) {
 
 		return 'ArrayBuffer';
 
@@ -129,57 +129,57 @@ export function getValueType( value ) {
 
 }
 
-export function getValueFromType( type, ...params ) {
+export function getValueFromType(type, ...params) {
 
-	const last4 = type ? type.slice( - 4 ) : undefined;
+	const last4 = type ? type.slice(- 4) : undefined;
 
-	if ( params.length === 1 ) { // ensure same behaviour as in NodeBuilder.format()
+	if (params.length === 1) { // ensure same behaviour as in NodeBuilder.format()
 
-		if ( last4 === 'vec2' ) params = [ params[ 0 ], params[ 0 ] ];
-		else if ( last4 === 'vec3' ) params = [ params[ 0 ], params[ 0 ], params[ 0 ] ];
-		else if ( last4 === 'vec4' ) params = [ params[ 0 ], params[ 0 ], params[ 0 ], params[ 0 ] ];
+		if (last4 === 'vec2') params = [params[0], params[0]];
+		else if (last4 === 'vec3') params = [params[0], params[0], params[0]];
+		else if (last4 === 'vec4') params = [params[0], params[0], params[0], params[0]];
 
 	}
 
-	if ( type === 'color' ) {
+	if (type === 'color') {
 
-		return new Color( ...params );
+		return new Color(...params);
 
-	} else if ( last4 === 'vec2' ) {
+	} else if (last4 === 'vec2') {
 
-		return new Vector2( ...params );
+		return new Vector2(...params);
 
-	} else if ( last4 === 'vec3' ) {
+	} else if (last4 === 'vec3') {
 
-		return new Vector3( ...params );
+		return new Vector3(...params);
 
-	} else if ( last4 === 'vec4' ) {
+	} else if (last4 === 'vec4') {
 
-		return new Vector4( ...params );
+		return new Vector4(...params);
 
-	} else if ( last4 === 'mat3' ) {
+	} else if (last4 === 'mat3') {
 
-		return new Matrix3( ...params );
+		return new Matrix3(...params);
 
-	} else if ( last4 === 'mat4' ) {
+	} else if (last4 === 'mat4') {
 
-		return new Matrix4( ...params );
+		return new Matrix4(...params);
 
-	} else if ( type === 'bool' ) {
+	} else if (type === 'bool') {
 
-		return params[ 0 ] || false;
+		return params[0] || false;
 
-	} else if ( ( type === 'float' ) || ( type === 'int' ) || ( type === 'uint' ) ) {
+	} else if ((type === 'float') || (type === 'int') || (type === 'uint')) {
 
-		return params[ 0 ] || 0;
+		return params[0] || 0;
 
-	} else if ( type === 'string' ) {
+	} else if (type === 'string') {
 
-		return params[ 0 ] || '';
+		return params[0] || '';
 
-	} else if ( type === 'ArrayBuffer' ) {
+	} else if (type === 'ArrayBuffer') {
 
-		return base64ToArrayBuffer( params[ 0 ] );
+		return base64ToArrayBuffer(params[0]);
 
 	}
 
@@ -187,24 +187,24 @@ export function getValueFromType( type, ...params ) {
 
 }
 
-export function arrayBufferToBase64( arrayBuffer ) {
+export function arrayBufferToBase64(arrayBuffer) {
 
 	let chars = '';
 
-	const array = new Uint8Array( arrayBuffer );
+	const array = new Uint8Array(arrayBuffer);
 
-	for ( let i = 0; i < array.length; i ++ ) {
+	for (let i = 0; i < array.length; i++) {
 
-		chars += String.fromCharCode( array[ i ] );
+		chars += String.fromCharCode(array[i]);
 
 	}
 
-	return btoa( chars );
+	return btoa(chars);
 
 }
 
-export function base64ToArrayBuffer( base64 ) {
+export function base64ToArrayBuffer(base64) {
 
-	return Uint8Array.from( atob( base64 ), c => c.charCodeAt( 0 ) ).buffer;
+	return Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
 
 }

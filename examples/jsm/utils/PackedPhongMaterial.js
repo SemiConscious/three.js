@@ -9,17 +9,17 @@ import {
 	ShaderChunk,
 	ShaderLib,
 	UniformsUtils,
-} from 'three';
+} from '@semiconscious/three';
 
 class PackedPhongMaterial extends MeshPhongMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
 		this.defines = {};
 		this.type = 'PackedPhongMaterial';
-		this.uniforms = UniformsUtils.merge( [
+		this.uniforms = UniformsUtils.merge([
 
 			ShaderLib.phong.uniforms,
 
@@ -28,7 +28,7 @@ class PackedPhongMaterial extends MeshPhongMaterial {
 				quantizeMatUV: { value: null }
 			}
 
-		] );
+		]);
 
 		this.vertexShader = [
 			'#define PHONG',
@@ -164,12 +164,12 @@ class PackedPhongMaterial extends MeshPhongMaterial {
 			ShaderChunk.fog_vertex,
 
 			'}',
-		].join( '\n' );
+		].join('\n');
 
 		// Use the original MeshPhongMaterial's fragmentShader.
 		this.fragmentShader = ShaderLib.phong.fragmentShader;
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 

@@ -3,7 +3,7 @@ import {
 	Object3D,
 	Quaternion,
 	Vector3
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Based on http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs
@@ -15,7 +15,7 @@ const _scale = new Vector3();
 
 class CSS3DObject extends Object3D {
 
-	constructor( element = document.createElement( 'div' ) ) {
+	constructor(element = document.createElement('div')) {
 
 		super();
 
@@ -26,29 +26,29 @@ class CSS3DObject extends Object3D {
 		this.element.style.pointerEvents = 'auto';
 		this.element.style.userSelect = 'none';
 
-		this.element.setAttribute( 'draggable', false );
+		this.element.setAttribute('draggable', false);
 
-		this.addEventListener( 'removed', function () {
+		this.addEventListener('removed', function () {
 
-			this.traverse( function ( object ) {
+			this.traverse(function (object) {
 
-				if ( object.element instanceof Element && object.element.parentNode !== null ) {
+				if (object.element instanceof Element && object.element.parentNode !== null) {
 
-					object.element.parentNode.removeChild( object.element );
+					object.element.parentNode.removeChild(object.element);
 
 				}
 
-			} );
+			});
 
-		} );
+		});
 
 	}
 
-	copy( source, recursive ) {
+	copy(source, recursive) {
 
-		super.copy( source, recursive );
+		super.copy(source, recursive);
 
-		this.element = source.element.cloneNode( true );
+		this.element = source.element.cloneNode(true);
 
 		return this;
 
@@ -58,9 +58,9 @@ class CSS3DObject extends Object3D {
 
 class CSS3DSprite extends CSS3DObject {
 
-	constructor( element ) {
+	constructor(element) {
 
-		super( element );
+		super(element);
 
 		this.isCSS3DSprite = true;
 
@@ -68,9 +68,9 @@ class CSS3DSprite extends CSS3DObject {
 
 	}
 
-	copy( source, recursive ) {
+	copy(source, recursive) {
 
-		super.copy( source, recursive );
+		super.copy(source, recursive);
 
 		this.rotation2D = source.rotation2D;
 
@@ -87,7 +87,7 @@ const _matrix2 = new Matrix4();
 
 class CSS3DRenderer {
 
-	constructor( parameters = {} ) {
+	constructor(parameters = {}) {
 
 		const _this = this;
 
@@ -99,22 +99,22 @@ class CSS3DRenderer {
 			objects: new WeakMap()
 		};
 
-		const domElement = parameters.element !== undefined ? parameters.element : document.createElement( 'div' );
+		const domElement = parameters.element !== undefined ? parameters.element : document.createElement('div');
 
 		domElement.style.overflow = 'hidden';
 
 		this.domElement = domElement;
 
-		const viewElement = document.createElement( 'div' );
+		const viewElement = document.createElement('div');
 		viewElement.style.transformOrigin = '0 0';
 		viewElement.style.pointerEvents = 'none';
-		domElement.appendChild( viewElement );
+		domElement.appendChild(viewElement);
 
-		const cameraElement = document.createElement( 'div' );
+		const cameraElement = document.createElement('div');
 
 		cameraElement.style.transformStyle = 'preserve-3d';
 
-		viewElement.appendChild( cameraElement );
+		viewElement.appendChild(cameraElement);
 
 		this.getSize = function () {
 
@@ -125,17 +125,17 @@ class CSS3DRenderer {
 
 		};
 
-		this.render = function ( scene, camera ) {
+		this.render = function (scene, camera) {
 
-			const fov = camera.projectionMatrix.elements[ 5 ] * _heightHalf;
+			const fov = camera.projectionMatrix.elements[5] * _heightHalf;
 
-			if ( camera.view && camera.view.enabled ) {
+			if (camera.view && camera.view.enabled) {
 
 				// view offset
-				viewElement.style.transform = `translate( ${ - camera.view.offsetX * ( _width / camera.view.width ) }px, ${ - camera.view.offsetY * ( _height / camera.view.height ) }px )`;
+				viewElement.style.transform = `translate( ${- camera.view.offsetX * (_width / camera.view.width)}px, ${- camera.view.offsetY * (_height / camera.view.height)}px )`;
 
 				// view fullWidth and fullHeight, view width and height
-				viewElement.style.transform += `scale( ${ camera.view.fullWidth / camera.view.width }, ${ camera.view.fullHeight / camera.view.height } )`;
+				viewElement.style.transform += `scale( ${camera.view.fullWidth / camera.view.width}, ${camera.view.fullHeight / camera.view.height} )`;
 
 			} else {
 
@@ -143,28 +143,28 @@ class CSS3DRenderer {
 
 			}
 
-			if ( scene.matrixWorldAutoUpdate === true ) scene.updateMatrixWorld();
-			if ( camera.parent === null && camera.matrixWorldAutoUpdate === true ) camera.updateMatrixWorld();
+			if (scene.matrixWorldAutoUpdate === true) scene.updateMatrixWorld();
+			if (camera.parent === null && camera.matrixWorldAutoUpdate === true) camera.updateMatrixWorld();
 
 			let tx, ty;
 
-			if ( camera.isOrthographicCamera ) {
+			if (camera.isOrthographicCamera) {
 
-				tx = - ( camera.right + camera.left ) / 2;
-				ty = ( camera.top + camera.bottom ) / 2;
+				tx = - (camera.right + camera.left) / 2;
+				ty = (camera.top + camera.bottom) / 2;
 
 			}
 
 			const scaleByViewOffset = camera.view && camera.view.enabled ? camera.view.height / camera.view.fullHeight : 1;
 			const cameraCSSMatrix = camera.isOrthographicCamera ?
-				`scale( ${ scaleByViewOffset } )` + 'scale(' + fov + ')' + 'translate(' + epsilon( tx ) + 'px,' + epsilon( ty ) + 'px)' + getCameraCSSMatrix( camera.matrixWorldInverse ) :
-				`scale( ${ scaleByViewOffset } )` + 'translateZ(' + fov + 'px)' + getCameraCSSMatrix( camera.matrixWorldInverse );
+				`scale( ${scaleByViewOffset} )` + 'scale(' + fov + ')' + 'translate(' + epsilon(tx) + 'px,' + epsilon(ty) + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse) :
+				`scale( ${scaleByViewOffset} )` + 'translateZ(' + fov + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse);
 			const perspective = camera.isPerspectiveCamera ? 'perspective(' + fov + 'px) ' : '';
 
 			const style = perspective + cameraCSSMatrix +
 				'translate(' + _widthHalf + 'px,' + _heightHalf + 'px)';
 
-			if ( cache.camera.style !== style ) {
+			if (cache.camera.style !== style) {
 
 				cameraElement.style.transform = style;
 
@@ -172,11 +172,11 @@ class CSS3DRenderer {
 
 			}
 
-			renderObject( scene, scene, camera, cameraCSSMatrix );
+			renderObject(scene, scene, camera, cameraCSSMatrix);
 
 		};
 
-		this.setSize = function ( width, height ) {
+		this.setSize = function (width, height) {
 
 			_width = width;
 			_height = height;
@@ -194,129 +194,129 @@ class CSS3DRenderer {
 
 		};
 
-		function epsilon( value ) {
+		function epsilon(value) {
 
-			return Math.abs( value ) < 1e-10 ? 0 : value;
+			return Math.abs(value) < 1e-10 ? 0 : value;
 
 		}
 
-		function getCameraCSSMatrix( matrix ) {
+		function getCameraCSSMatrix(matrix) {
 
 			const elements = matrix.elements;
 
 			return 'matrix3d(' +
-				epsilon( elements[ 0 ] ) + ',' +
-				epsilon( - elements[ 1 ] ) + ',' +
-				epsilon( elements[ 2 ] ) + ',' +
-				epsilon( elements[ 3 ] ) + ',' +
-				epsilon( elements[ 4 ] ) + ',' +
-				epsilon( - elements[ 5 ] ) + ',' +
-				epsilon( elements[ 6 ] ) + ',' +
-				epsilon( elements[ 7 ] ) + ',' +
-				epsilon( elements[ 8 ] ) + ',' +
-				epsilon( - elements[ 9 ] ) + ',' +
-				epsilon( elements[ 10 ] ) + ',' +
-				epsilon( elements[ 11 ] ) + ',' +
-				epsilon( elements[ 12 ] ) + ',' +
-				epsilon( - elements[ 13 ] ) + ',' +
-				epsilon( elements[ 14 ] ) + ',' +
-				epsilon( elements[ 15 ] ) +
-			')';
+				epsilon(elements[0]) + ',' +
+				epsilon(- elements[1]) + ',' +
+				epsilon(elements[2]) + ',' +
+				epsilon(elements[3]) + ',' +
+				epsilon(elements[4]) + ',' +
+				epsilon(- elements[5]) + ',' +
+				epsilon(elements[6]) + ',' +
+				epsilon(elements[7]) + ',' +
+				epsilon(elements[8]) + ',' +
+				epsilon(- elements[9]) + ',' +
+				epsilon(elements[10]) + ',' +
+				epsilon(elements[11]) + ',' +
+				epsilon(elements[12]) + ',' +
+				epsilon(- elements[13]) + ',' +
+				epsilon(elements[14]) + ',' +
+				epsilon(elements[15]) +
+				')';
 
 		}
 
-		function getObjectCSSMatrix( matrix ) {
+		function getObjectCSSMatrix(matrix) {
 
 			const elements = matrix.elements;
 			const matrix3d = 'matrix3d(' +
-				epsilon( elements[ 0 ] ) + ',' +
-				epsilon( elements[ 1 ] ) + ',' +
-				epsilon( elements[ 2 ] ) + ',' +
-				epsilon( elements[ 3 ] ) + ',' +
-				epsilon( - elements[ 4 ] ) + ',' +
-				epsilon( - elements[ 5 ] ) + ',' +
-				epsilon( - elements[ 6 ] ) + ',' +
-				epsilon( - elements[ 7 ] ) + ',' +
-				epsilon( elements[ 8 ] ) + ',' +
-				epsilon( elements[ 9 ] ) + ',' +
-				epsilon( elements[ 10 ] ) + ',' +
-				epsilon( elements[ 11 ] ) + ',' +
-				epsilon( elements[ 12 ] ) + ',' +
-				epsilon( elements[ 13 ] ) + ',' +
-				epsilon( elements[ 14 ] ) + ',' +
-				epsilon( elements[ 15 ] ) +
-			')';
+				epsilon(elements[0]) + ',' +
+				epsilon(elements[1]) + ',' +
+				epsilon(elements[2]) + ',' +
+				epsilon(elements[3]) + ',' +
+				epsilon(- elements[4]) + ',' +
+				epsilon(- elements[5]) + ',' +
+				epsilon(- elements[6]) + ',' +
+				epsilon(- elements[7]) + ',' +
+				epsilon(elements[8]) + ',' +
+				epsilon(elements[9]) + ',' +
+				epsilon(elements[10]) + ',' +
+				epsilon(elements[11]) + ',' +
+				epsilon(elements[12]) + ',' +
+				epsilon(elements[13]) + ',' +
+				epsilon(elements[14]) + ',' +
+				epsilon(elements[15]) +
+				')';
 
 			return 'translate(-50%,-50%)' + matrix3d;
 
 		}
 
-		function renderObject( object, scene, camera, cameraCSSMatrix ) {
+		function renderObject(object, scene, camera, cameraCSSMatrix) {
 
-			if ( object.isCSS3DObject ) {
+			if (object.isCSS3DObject) {
 
-				const visible = ( object.visible === true ) && ( object.layers.test( camera.layers ) === true );
-				object.element.style.display = ( visible === true ) ? '' : 'none';
+				const visible = (object.visible === true) && (object.layers.test(camera.layers) === true);
+				object.element.style.display = (visible === true) ? '' : 'none';
 
-				if ( visible === true ) {
+				if (visible === true) {
 
-					object.onBeforeRender( _this, scene, camera );
+					object.onBeforeRender(_this, scene, camera);
 
 					let style;
 
-					if ( object.isCSS3DSprite ) {
+					if (object.isCSS3DSprite) {
 
 						// http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
 
-						_matrix.copy( camera.matrixWorldInverse );
+						_matrix.copy(camera.matrixWorldInverse);
 						_matrix.transpose();
 
-						if ( object.rotation2D !== 0 ) _matrix.multiply( _matrix2.makeRotationZ( object.rotation2D ) );
+						if (object.rotation2D !== 0) _matrix.multiply(_matrix2.makeRotationZ(object.rotation2D));
 
-						object.matrixWorld.decompose( _position, _quaternion, _scale );
-						_matrix.setPosition( _position );
-						_matrix.scale( _scale );
+						object.matrixWorld.decompose(_position, _quaternion, _scale);
+						_matrix.setPosition(_position);
+						_matrix.scale(_scale);
 
-						_matrix.elements[ 3 ] = 0;
-						_matrix.elements[ 7 ] = 0;
-						_matrix.elements[ 11 ] = 0;
-						_matrix.elements[ 15 ] = 1;
+						_matrix.elements[3] = 0;
+						_matrix.elements[7] = 0;
+						_matrix.elements[11] = 0;
+						_matrix.elements[15] = 1;
 
-						style = getObjectCSSMatrix( _matrix );
+						style = getObjectCSSMatrix(_matrix);
 
 					} else {
 
-						style = getObjectCSSMatrix( object.matrixWorld );
+						style = getObjectCSSMatrix(object.matrixWorld);
 
 					}
 
 					const element = object.element;
-					const cachedObject = cache.objects.get( object );
+					const cachedObject = cache.objects.get(object);
 
-					if ( cachedObject === undefined || cachedObject.style !== style ) {
+					if (cachedObject === undefined || cachedObject.style !== style) {
 
 						element.style.transform = style;
 
 						const objectData = { style: style };
-						cache.objects.set( object, objectData );
+						cache.objects.set(object, objectData);
 
 					}
 
-					if ( element.parentNode !== cameraElement ) {
+					if (element.parentNode !== cameraElement) {
 
-						cameraElement.appendChild( element );
+						cameraElement.appendChild(element);
 
 					}
 
-					object.onAfterRender( _this, scene, camera );
+					object.onAfterRender(_this, scene, camera);
 
 				}
 
 			}
 
-			for ( let i = 0, l = object.children.length; i < l; i ++ ) {
+			for (let i = 0, l = object.children.length; i < l; i++) {
 
-				renderObject( object.children[ i ], scene, camera, cameraCSSMatrix );
+				renderObject(object.children[i], scene, camera, cameraCSSMatrix);
 
 			}
 

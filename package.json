@@ -1,5 +1,5 @@
 {
-  "name": "three",
+  "name": "@semiconscious/three",
   "version": "0.161.1",
   "description": "JavaScript 3D library",
   "type": "module",

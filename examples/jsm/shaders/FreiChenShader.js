@@ -1,6 +1,6 @@
 import {
 	Vector2
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Edge Detection Shader using Frei-Chen filter
@@ -16,7 +16,7 @@ const FreiChenShader = {
 	uniforms: {
 
 		'tDiffuse': { value: null },
-		'aspect': { value: new Vector2( 512, 512 ) }
+		'aspect': { value: new Vector2(512, 512) }
 	},
 
 	vertexShader: /* glsl */`

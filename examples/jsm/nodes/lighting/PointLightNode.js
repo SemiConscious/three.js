@@ -6,56 +6,56 @@ import { objectViewPosition } from '../accessors/Object3DNode.js';
 import { positionView } from '../accessors/PositionNode.js';
 import { addNodeClass } from '../core/Node.js';
 
-import { PointLight } from 'three';
+import { PointLight } from '@semiconscious/three';
 
 class PointLightNode extends AnalyticLightNode {
 
-	constructor( light = null ) {
+	constructor(light = null) {
 
-		super( light );
+		super(light);
 
-		this.cutoffDistanceNode = uniform( 0 );
-		this.decayExponentNode = uniform( 0 );
+		this.cutoffDistanceNode = uniform(0);
+		this.decayExponentNode = uniform(0);
 
 	}
 
-	update( frame ) {
+	update(frame) {
 
 		const { light } = this;
 
-		super.update( frame );
+		super.update(frame);
 
 		this.cutoffDistanceNode.value = light.distance;
 		this.decayExponentNode.value = light.decay;
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
 		const { colorNode, cutoffDistanceNode, decayExponentNode, light } = this;
 
 		const lightingModel = builder.context.lightingModel;
 
-		const lVector = objectViewPosition( light ).sub( positionView ); // @TODO: Add it into LightNode
+		const lVector = objectViewPosition(light).sub(positionView); // @TODO: Add it into LightNode
 
 		const lightDirection = lVector.normalize();
 		const lightDistance = lVector.length();
 
-		const lightAttenuation = getDistanceAttenuation( {
+		const lightAttenuation = getDistanceAttenuation({
 			lightDistance,
 			cutoffDistance: cutoffDistanceNode,
 			decayExponent: decayExponentNode
-		} );
+		});
 
-		const lightColor = colorNode.mul( lightAttenuation );
+		const lightColor = colorNode.mul(lightAttenuation);
 
 		const reflectedLight = builder.context.reflectedLight;
 
-		lightingModel.direct( {
+		lightingModel.direct({
 			lightDirection,
 			lightColor,
 			reflectedLight
-		}, builder.stack, builder );
+		}, builder.stack, builder);
 
 	}
 
@@ -63,6 +63,6 @@ class PointLightNode extends AnalyticLightNode {
 
 export default PointLightNode;
 
-addNodeClass( 'PointLightNode', PointLightNode );
+addNodeClass('PointLightNode', PointLightNode);
 
-addLightNode( PointLight, PointLightNode );
+addLightNode(PointLight, PointLightNode);

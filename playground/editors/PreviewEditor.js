@@ -3,42 +3,42 @@ import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
 import { Element, LabelElement, SelectInput } from 'flow';
 import { BaseNodeEditor } from '../BaseNodeEditor.js';
 import { MeshBasicNodeMaterial, float } from 'three/nodes';
-import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, DoubleSide, SphereGeometry, BoxGeometry, PlaneGeometry, TorusKnotGeometry } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, DoubleSide, SphereGeometry, BoxGeometry, PlaneGeometry, TorusKnotGeometry } from '@semiconscious/three';
 
 const sceneDict = {};
 
-const getScene = ( name ) => {
+const getScene = (name) => {
 
-	let scene = sceneDict[ name ];
+	let scene = sceneDict[name];
 
-	if ( scene === undefined ) {
+	if (scene === undefined) {
 
 		scene = new Scene();
 
-		if ( name === 'box' ) {
+		if (name === 'box') {
 
-			const box = new Mesh( new BoxGeometry( 1.3, 1.3, 1.3 ) );
-			scene.add( box );
+			const box = new Mesh(new BoxGeometry(1.3, 1.3, 1.3));
+			scene.add(box);
 
-		} else if ( name === 'sphere' ) {
+		} else if (name === 'sphere') {
 
-			const sphere = new Mesh( new SphereGeometry( 1, 32, 16 ) );
-			scene.add( sphere );
+			const sphere = new Mesh(new SphereGeometry(1, 32, 16));
+			scene.add(sphere);
 
-		} else if ( name === 'plane' || name === 'sprite' ) {
+		} else if (name === 'plane' || name === 'sprite') {
 
-			const plane = new Mesh( new PlaneGeometry( 2, 2 ) );
-			scene.add( plane );
+			const plane = new Mesh(new PlaneGeometry(2, 2));
+			scene.add(plane);
 
 
-		} else if ( name === 'torus' ) {
+		} else if (name === 'torus') {
 
-			const torus = new Mesh( new TorusKnotGeometry( .7, .1, 100, 16 ) );
-			scene.add( torus );
+			const torus = new Mesh(new TorusKnotGeometry(.7, .1, 100, 16));
+			scene.add(torus);
 
 		}
 
-		sceneDict[ name ] = scene;
+		sceneDict[name] = scene;
 
 	}
 
@@ -53,7 +53,7 @@ export class PreviewEditor extends BaseNodeEditor {
 		const width = 300;
 		const height = 300;
 
-		super( 'Preview', null, height );
+		super('Preview', null, height);
 
 		const material = new MeshBasicNodeMaterial();
 		material.colorNode = float();
@@ -61,53 +61,53 @@ export class PreviewEditor extends BaseNodeEditor {
 		material.transparent = true;
 
 		const previewElement = new Element();
-		previewElement.dom.style[ 'padding-top' ] = 0;
-		previewElement.dom.style[ 'padding-bottom' ] = 0;
-		previewElement.dom.style[ 'padding-left' ] = 0;
-		previewElement.dom.style[ 'padding-right' ] = '14px';
+		previewElement.dom.style['padding-top'] = 0;
+		previewElement.dom.style['padding-bottom'] = 0;
+		previewElement.dom.style['padding-left'] = 0;
+		previewElement.dom.style['padding-right'] = '14px';
 
-		const sceneInput = new SelectInput( [
+		const sceneInput = new SelectInput([
 			{ name: 'Box', value: 'box' },
 			{ name: 'Sphere', value: 'sphere' },
 			{ name: 'Plane', value: 'plane' },
 			{ name: 'Sprite', value: 'sprite' },
 			{ name: 'Torus', value: 'torus' }
-		], 'box' );
+		], 'box');
 
-		const inputElement = new LabelElement( 'Input' ).setInput( 4 ).onConnect( () => {
+		const inputElement = new LabelElement('Input').setInput(4).onConnect(() => {
 
 			material.colorNode = inputElement.getLinkedObject() || float();
 			material.dispose();
 
-		}, true );
+		}, true);
 
-		const canvas = document.createElement( 'canvas' );
+		const canvas = document.createElement('canvas');
 		canvas.style.position = 'absolute';
-		previewElement.dom.append( canvas );
-		previewElement.setHeight( height );
+		previewElement.dom.append(canvas);
+		previewElement.setHeight(height);
 
-		previewElement.dom.addEventListener( 'wheel', e => e.stopPropagation() );
+		previewElement.dom.addEventListener('wheel', e => e.stopPropagation());
 
-		const renderer = new WebGLRenderer( {
+		const renderer = new WebGLRenderer({
 			canvas,
 			alpha: true
-		} );
+		});
 
 		renderer.autoClear = false;
-		renderer.setSize( width, height, true );
-		renderer.setPixelRatio( window.devicePixelRatio );
+		renderer.setSize(width, height, true);
+		renderer.setPixelRatio(window.devicePixelRatio);
 
-		const camera = new PerspectiveCamera( 45, width / height, 0.1, 100 );
+		const camera = new PerspectiveCamera(45, width / height, 0.1, 100);
 		camera.aspect = width / height;
 		camera.updateProjectionMatrix();
-		camera.position.set( - 2, 2, 2 );
-		camera.lookAt( 0, 0, 0 );
+		camera.position.set(- 2, 2, 2);
+		camera.lookAt(0, 0, 0);
 
-		const controls = new OrbitControls( camera, previewElement.dom );
+		const controls = new OrbitControls(camera, previewElement.dom);
 		controls.enableKeys = false;
 		controls.update();
 
-		const viewHelper = new ViewHelper( camera, previewElement.dom );
+		const viewHelper = new ViewHelper(camera, previewElement.dom);
 
 		this.sceneInput = sceneInput;
 		this.viewHelper = viewHelper;
@@ -115,15 +115,15 @@ export class PreviewEditor extends BaseNodeEditor {
 		this.camera = camera;
 		this.renderer = renderer;
 
-		this.add( inputElement )
-			.add( new LabelElement( 'Object' ).add( sceneInput ) )
-			.add( previewElement );
+		this.add(inputElement)
+			.add(new LabelElement('Object').add(sceneInput))
+			.add(previewElement);
 
 	}
 
-	setEditor( editor ) {
+	setEditor(editor) {
 
-		super.setEditor( editor );
+		super.setEditor(editor);
 
 		this.updateAnimationRequest();
 
@@ -131,9 +131,9 @@ export class PreviewEditor extends BaseNodeEditor {
 
 	updateAnimationRequest() {
 
-		if ( this.editor !== null ) {
+		if (this.editor !== null) {
 
-			requestAnimationFrame( () => this.update() );
+			requestAnimationFrame(() => this.update());
 
 		}
 
@@ -147,21 +147,21 @@ export class PreviewEditor extends BaseNodeEditor {
 
 		const sceneName = sceneInput.getValue();
 
-		const scene = getScene( sceneName );
-		const mesh = scene.children[ 0 ];
+		const scene = getScene(sceneName);
+		const mesh = scene.children[0];
 
 		mesh.material = material;
 
-		if ( sceneName === 'sprite' ) {
+		if (sceneName === 'sprite') {
 
-			mesh.lookAt( camera.position );
+			mesh.lookAt(camera.position);
 
 		}
 
 		renderer.clear();
-		renderer.render( scene, camera );
+		renderer.render(scene, camera);
 
-		viewHelper.render( renderer );
+		viewHelper.render(renderer);
 
 	}
 

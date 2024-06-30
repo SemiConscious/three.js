@@ -3,31 +3,31 @@ import { lightTargetDirection } from './LightNode.js';
 import { addLightNode } from './LightsNode.js';
 import { addNodeClass } from '../core/Node.js';
 
-import { DirectionalLight } from 'three';
+import { DirectionalLight } from '@semiconscious/three';
 
 class DirectionalLightNode extends AnalyticLightNode {
 
-	constructor( light = null ) {
+	constructor(light = null) {
 
-		super( light );
+		super(light);
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
-		super.setup( builder );
+		super.setup(builder);
 
 		const lightingModel = builder.context.lightingModel;
 
 		const lightColor = this.colorNode;
-		const lightDirection = lightTargetDirection( this.light );
+		const lightDirection = lightTargetDirection(this.light);
 		const reflectedLight = builder.context.reflectedLight;
 
-		lightingModel.direct( {
+		lightingModel.direct({
 			lightDirection,
 			lightColor,
 			reflectedLight
-		}, builder.stack, builder );
+		}, builder.stack, builder);
 
 	}
 
@@ -35,6 +35,6 @@ class DirectionalLightNode extends AnalyticLightNode {
 
 export default DirectionalLightNode;
 
-addNodeClass( 'DirectionalLightNode', DirectionalLightNode );
+addNodeClass('DirectionalLightNode', DirectionalLightNode);
 
-addLightNode( DirectionalLight, DirectionalLightNode );
+addLightNode(DirectionalLight, DirectionalLightNode);

@@ -3,22 +3,22 @@ import { NodeUpdateType } from '../core/constants.js';
 import { addNodeClass } from '../core/Node.js';
 import { addNodeElement, nodeProxy } from '../shadernode/ShaderNode.js';
 import { viewportTopLeft } from './ViewportNode.js';
-import { Vector2, FramebufferTexture, LinearMipmapLinearFilter } from 'three';
+import { Vector2, FramebufferTexture, LinearMipmapLinearFilter } from '@semiconscious/three';
 
 const _size = new Vector2();
 
 class ViewportTextureNode extends TextureNode {
 
-	constructor( uvNode = viewportTopLeft, levelNode = null, framebufferTexture = null ) {
+	constructor(uvNode = viewportTopLeft, levelNode = null, framebufferTexture = null) {
 
-		if ( framebufferTexture === null ) {
+		if (framebufferTexture === null) {
 
 			framebufferTexture = new FramebufferTexture();
 			framebufferTexture.minFilter = LinearMipmapLinearFilter;
 
 		}
 
-		super( framebufferTexture, uvNode, levelNode );
+		super(framebufferTexture, uvNode, levelNode);
 
 		this.generateMipmaps = false;
 
@@ -28,16 +28,16 @@ class ViewportTextureNode extends TextureNode {
 
 	}
 
-	updateBefore( frame ) {
+	updateBefore(frame) {
 
 		const renderer = frame.renderer;
-		renderer.getDrawingBufferSize( _size );
+		renderer.getDrawingBufferSize(_size);
 
 		//
 
 		const framebufferTexture = this.value;
 
-		if ( framebufferTexture.image.width !== _size.width || framebufferTexture.image.height !== _size.height ) {
+		if (framebufferTexture.image.width !== _size.width || framebufferTexture.image.height !== _size.height) {
 
 			framebufferTexture.image.width = _size.width;
 			framebufferTexture.image.height = _size.height;
@@ -50,7 +50,7 @@ class ViewportTextureNode extends TextureNode {
 		const currentGenerateMipmaps = framebufferTexture.generateMipmaps;
 		framebufferTexture.generateMipmaps = this.generateMipmaps;
 
-		renderer.copyFramebufferToTexture( framebufferTexture );
+		renderer.copyFramebufferToTexture(framebufferTexture);
 
 		framebufferTexture.generateMipmaps = currentGenerateMipmaps;
 
@@ -58,7 +58,7 @@ class ViewportTextureNode extends TextureNode {
 
 	clone() {
 
-		return new this.constructor( this.uvNode, this.levelNode, this.value );
+		return new this.constructor(this.uvNode, this.levelNode, this.value);
 
 	}
 
@@ -66,10 +66,10 @@ class ViewportTextureNode extends TextureNode {
 
 export default ViewportTextureNode;
 
-export const viewportTexture = nodeProxy( ViewportTextureNode );
-export const viewportMipTexture = nodeProxy( ViewportTextureNode, null, null, { generateMipmaps: true } );
+export const viewportTexture = nodeProxy(ViewportTextureNode);
+export const viewportMipTexture = nodeProxy(ViewportTextureNode, null, null, { generateMipmaps: true });
 
-addNodeElement( 'viewportTexture', viewportTexture );
-addNodeElement( 'viewportMipTexture', viewportMipTexture );
+addNodeElement('viewportTexture', viewportTexture);
+addNodeElement('viewportMipTexture', viewportMipTexture);
 
-addNodeClass( 'ViewportTextureNode', ViewportTextureNode );
+addNodeClass('ViewportTextureNode', ViewportTextureNode);

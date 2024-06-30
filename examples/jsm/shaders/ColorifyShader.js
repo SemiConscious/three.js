@@ -1,6 +1,6 @@
 import {
 	Color
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Colorify shader
@@ -13,7 +13,7 @@ const ColorifyShader = {
 	uniforms: {
 
 		'tDiffuse': { value: null },
-		'color': { value: new Color( 0xffffff ) }
+		'color': { value: new Color(0xffffff) }
 
 	},
 

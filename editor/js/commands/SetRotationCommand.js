@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import { Euler } from 'three';
+import { Euler } from '@semiconscious/three';
 
 /**
  * @param editor Editor
@@ -10,9 +10,9 @@ import { Euler } from 'three';
  */
 class SetRotationCommand extends Command {
 
-	constructor( editor, object, newRotation, optionalOldRotation ) {
+	constructor(editor, object, newRotation, optionalOldRotation) {
 
-		super( editor );
+		super(editor);
 
 		this.type = 'SetRotationCommand';
 		this.name = 'Set Rotation';
@@ -20,14 +20,14 @@ class SetRotationCommand extends Command {
 
 		this.object = object;
 
-		if ( object !== undefined && newRotation !== undefined ) {
+		if (object !== undefined && newRotation !== undefined) {
 
 			this.oldRotation = object.rotation.clone();
 			this.newRotation = newRotation.clone();
 
 		}
 
-		if ( optionalOldRotation !== undefined ) {
+		if (optionalOldRotation !== undefined) {
 
 			this.oldRotation = optionalOldRotation.clone();
 
@@ -37,29 +37,29 @@ class SetRotationCommand extends Command {
 
 	execute() {
 
-		this.object.rotation.copy( this.newRotation );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.objectChanged.dispatch( this.object );
+		this.object.rotation.copy(this.newRotation);
+		this.object.updateMatrixWorld(true);
+		this.editor.signals.objectChanged.dispatch(this.object);
 
 	}
 
 	undo() {
 
-		this.object.rotation.copy( this.oldRotation );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.objectChanged.dispatch( this.object );
+		this.object.rotation.copy(this.oldRotation);
+		this.object.updateMatrixWorld(true);
+		this.editor.signals.objectChanged.dispatch(this.object);
 
 	}
 
-	update( command ) {
+	update(command) {
 
-		this.newRotation.copy( command.newRotation );
+		this.newRotation.copy(command.newRotation);
 
 	}
 
 	toJSON() {
 
-		const output = super.toJSON( this );
+		const output = super.toJSON(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldRotation = this.oldRotation.toArray();
@@ -69,13 +69,13 @@ class SetRotationCommand extends Command {
 
 	}
 
-	fromJSON( json ) {
+	fromJSON(json) {
 
-		super.fromJSON( json );
+		super.fromJSON(json);
 
-		this.object = this.editor.objectByUuid( json.objectUuid );
-		this.oldRotation = new Euler().fromArray( json.oldRotation );
-		this.newRotation = new Euler().fromArray( json.newRotation );
+		this.object = this.editor.objectByUuid(json.objectUuid);
+		this.oldRotation = new Euler().fromArray(json.oldRotation);
+		this.newRotation = new Euler().fromArray(json.newRotation);
 
 	}
 

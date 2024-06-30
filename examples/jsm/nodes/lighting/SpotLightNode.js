@@ -8,75 +8,75 @@ import { objectViewPosition } from '../accessors/Object3DNode.js';
 import { positionView } from '../accessors/PositionNode.js';
 import { addNodeClass } from '../core/Node.js';
 
-import { SpotLight } from 'three';
+import { SpotLight } from '@semiconscious/three';
 
 class SpotLightNode extends AnalyticLightNode {
 
-	constructor( light = null ) {
+	constructor(light = null) {
 
-		super( light );
+		super(light);
 
-		this.coneCosNode = uniform( 0 );
-		this.penumbraCosNode = uniform( 0 );
+		this.coneCosNode = uniform(0);
+		this.penumbraCosNode = uniform(0);
 
-		this.cutoffDistanceNode = uniform( 0 );
-		this.decayExponentNode = uniform( 0 );
+		this.cutoffDistanceNode = uniform(0);
+		this.decayExponentNode = uniform(0);
 
 	}
 
-	update( frame ) {
+	update(frame) {
 
-		super.update( frame );
+		super.update(frame);
 
 		const { light } = this;
 
-		this.coneCosNode.value = Math.cos( light.angle );
-		this.penumbraCosNode.value = Math.cos( light.angle * ( 1 - light.penumbra ) );
+		this.coneCosNode.value = Math.cos(light.angle);
+		this.penumbraCosNode.value = Math.cos(light.angle * (1 - light.penumbra));
 
 		this.cutoffDistanceNode.value = light.distance;
 		this.decayExponentNode.value = light.decay;
 
 	}
 
-	getSpotAttenuation( angleCosine ) {
+	getSpotAttenuation(angleCosine) {
 
 		const { coneCosNode, penumbraCosNode } = this;
 
-		return smoothstep( coneCosNode, penumbraCosNode, angleCosine );
+		return smoothstep(coneCosNode, penumbraCosNode, angleCosine);
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
-		super.setup( builder );
+		super.setup(builder);
 
 		const lightingModel = builder.context.lightingModel;
 
 		const { colorNode, cutoffDistanceNode, decayExponentNode, light } = this;
 
-		const lVector = objectViewPosition( light ).sub( positionView ); // @TODO: Add it into LightNode
+		const lVector = objectViewPosition(light).sub(positionView); // @TODO: Add it into LightNode
 
 		const lightDirection = lVector.normalize();
-		const angleCos = lightDirection.dot( lightTargetDirection( light ) );
-		const spotAttenuation = this.getSpotAttenuation( angleCos );
+		const angleCos = lightDirection.dot(lightTargetDirection(light));
+		const spotAttenuation = this.getSpotAttenuation(angleCos);
 
 		const lightDistance = lVector.length();
 
-		const lightAttenuation = getDistanceAttenuation( {
+		const lightAttenuation = getDistanceAttenuation({
 			lightDistance,
 			cutoffDistance: cutoffDistanceNode,
 			decayExponent: decayExponentNode
-		} );
+		});
 
-		const lightColor = colorNode.mul( spotAttenuation ).mul( lightAttenuation );
+		const lightColor = colorNode.mul(spotAttenuation).mul(lightAttenuation);
 
 		const reflectedLight = builder.context.reflectedLight;
 
-		lightingModel.direct( {
+		lightingModel.direct({
 			lightDirection,
 			lightColor,
 			reflectedLight
-		}, builder.stack, builder );
+		}, builder.stack, builder);
 
 	}
 
@@ -84,6 +84,6 @@ class SpotLightNode extends AnalyticLightNode {
 
 export default SpotLightNode;
 
-addNodeClass( 'SpotLightNode', SpotLightNode );
+addNodeClass('SpotLightNode', SpotLightNode);
 
-addLightNode( SpotLight, SpotLightNode );
+addLightNode(SpotLight, SpotLightNode);

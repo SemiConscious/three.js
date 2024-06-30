@@ -43,13 +43,13 @@
 
 		<code>
 		// Option 1: Import the entire three.js core library.
-		import * as THREE from 'three';
+		import * as THREE from '@semiconscious/three';
 
 		const scene = new THREE.Scene();
 
 
 		// Option 2: Import just the parts you need.
-		import { Scene } from 'three';
+		import { Scene } from '@semiconscious/three';
 
 		const scene = new Scene();
 		</code>
@@ -95,7 +95,7 @@
 
 		&lt;script type="module">
 
-			import * as THREE from 'three';
+			import * as THREE from '@semiconscious/three';
 
 			const scene = new THREE.Scene();
 
@@ -135,7 +135,7 @@
 
 		&lt;script type="module">
 
-			import * as THREE from 'three';
+			import * as THREE from '@semiconscious/three';
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 			const controls = new OrbitControls( camera, renderer.domElement );
@@ -166,7 +166,7 @@
 		</p>
 
 		<p>
-			نأمل في إزالة هذه المسارات النسبية عندما يصبح [link:https://github.com/WICG/import-maps import maps] متاحًا على نطاق واسع ، واستبدالها بمحددات الحزمة المجردة إلى اسم الحزمة npm ، 'three'. يتطابق هذا مع توقعات أداة الإنشاء لحزم npm بشكل وثيق ، ويسمح لمجموعتي المستخدمين بكتابة نفس الرمز تمامًا عند استيراد ملف. بالنسبة للمستخدمين الذين يفضلون تجنب أدوات الإنشاء ، يمكن أن يوجه تعيين JSON البسيط جميع الواردات إلى CDN أو مجلد ملف ثابت. من الناحية التجريبية ، يمكنك محاولة استخدام عمليات استيراد أبسط اليوم مع تعبئة خريطة الاستيراد ، كما هو موضح في [link:https://glitch.com/edit/#!/three-import-map?path=index.html import map example].
+			نأمل في إزالة هذه المسارات النسبية عندما يصبح [link:https://github.com/WICG/import-maps import maps] متاحًا على نطاق واسع ، واستبدالها بمحددات الحزمة المجردة إلى اسم الحزمة npm ، '@semiconscious/three'. يتطابق هذا مع توقعات أداة الإنشاء لحزم npm بشكل وثيق ، ويسمح لمجموعتي المستخدمين بكتابة نفس الرمز تمامًا عند استيراد ملف. بالنسبة للمستخدمين الذين يفضلون تجنب أدوات الإنشاء ، يمكن أن يوجه تعيين JSON البسيط جميع الواردات إلى CDN أو مجلد ملف ثابت. من الناحية التجريبية ، يمكنك محاولة استخدام عمليات استيراد أبسط اليوم مع تعبئة خريطة الاستيراد ، كما هو موضح في [link:https://glitch.com/edit/#!/three-import-map?path=index.html import map example].
 		</p>
 
 		<h3>Node.js</h3>

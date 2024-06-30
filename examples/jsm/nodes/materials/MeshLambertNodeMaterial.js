@@ -1,13 +1,13 @@
 import NodeMaterial, { addNodeMaterial } from './NodeMaterial.js';
 import PhongLightingModel from '../functions/PhongLightingModel.js';
 
-import { MeshLambertMaterial } from 'three';
+import { MeshLambertMaterial } from '@semiconscious/three';
 
 const defaultValues = new MeshLambertMaterial();
 
 class MeshLambertNodeMaterial extends NodeMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -15,15 +15,15 @@ class MeshLambertNodeMaterial extends NodeMaterial {
 
 		this.lights = true;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
-	setupLightingModel( /*builder*/ ) {
+	setupLightingModel( /*builder*/) {
 
-		return new PhongLightingModel( false ); // ( specular ) -> force lambert
+		return new PhongLightingModel(false); // ( specular ) -> force lambert
 
 	}
 
@@ -31,4 +31,4 @@ class MeshLambertNodeMaterial extends NodeMaterial {
 
 export default MeshLambertNodeMaterial;
 
-addNodeMaterial( 'MeshLambertNodeMaterial', MeshLambertNodeMaterial );
+addNodeMaterial('MeshLambertNodeMaterial', MeshLambertNodeMaterial);

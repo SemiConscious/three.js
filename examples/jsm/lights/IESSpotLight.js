@@ -1,18 +1,18 @@
-import { SpotLight } from 'three';
+import { SpotLight } from '@semiconscious/three';
 
 class IESSpotLight extends SpotLight {
 
-	constructor( color, intensity, distance, angle, penumbra, decay ) {
+	constructor(color, intensity, distance, angle, penumbra, decay) {
 
-		super( color, intensity, distance, angle, penumbra, decay );
+		super(color, intensity, distance, angle, penumbra, decay);
 
 		this.iesMap = null;
 
 	}
 
-	copy( source, recursive ) {
+	copy(source, recursive) {
 
-		super.copy( source, recursive );
+		super.copy(source, recursive);
 
 		this.iesMap = source.iesMap;
 

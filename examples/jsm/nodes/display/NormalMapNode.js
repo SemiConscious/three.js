@@ -10,12 +10,12 @@ import { faceDirection } from './FrontFacingNode.js';
 import { addNodeClass } from '../core/Node.js';
 import { addNodeElement, tslFn, nodeProxy, vec3, mat3 } from '../shadernode/ShaderNode.js';
 
-import { TangentSpaceNormalMap, ObjectSpaceNormalMap } from 'three';
+import { TangentSpaceNormalMap, ObjectSpaceNormalMap } from '@semiconscious/three';
 
 // Normal Mapping Without Precomputed Tangents
 // http://www.thetenthplanet.de/archives/1180
 
-const perturbNormal2Arb = tslFn( ( inputs ) => {
+const perturbNormal2Arb = tslFn((inputs) => {
 
 	const { eye_pos, surf_norm, mapN, uv } = inputs;
 
@@ -26,24 +26,24 @@ const perturbNormal2Arb = tslFn( ( inputs ) => {
 
 	const N = surf_norm; // normalized
 
-	const q1perp = q1.cross( N );
-	const q0perp = N.cross( q0 );
+	const q1perp = q1.cross(N);
+	const q0perp = N.cross(q0);
 
-	const T = q1perp.mul( st0.x ).add( q0perp.mul( st1.x ) );
-	const B = q1perp.mul( st0.y ).add( q0perp.mul( st1.y ) );
+	const T = q1perp.mul(st0.x).add(q0perp.mul(st1.x));
+	const B = q1perp.mul(st0.y).add(q0perp.mul(st1.y));
 
-	const det = T.dot( T ).max( B.dot( B ) );
-	const scale = faceDirection.mul( det.inverseSqrt() );
+	const det = T.dot(T).max(B.dot(B));
+	const scale = faceDirection.mul(det.inverseSqrt());
 
-	return add( T.mul( mapN.x, scale ), B.mul( mapN.y, scale ), N.mul( mapN.z ) ).normalize();
+	return add(T.mul(mapN.x, scale), B.mul(mapN.y, scale), N.mul(mapN.z)).normalize();
 
-} );
+});
 
 class NormalMapNode extends TempNode {
 
-	constructor( node, scaleNode = null ) {
+	constructor(node, scaleNode = null) {
 
-		super( 'vec3' );
+		super('vec3');
 
 		this.node = node;
 		this.scaleNode = scaleNode;
@@ -52,40 +52,40 @@ class NormalMapNode extends TempNode {
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
 		const { normalMapType, scaleNode } = this;
 
-		let normalMap = this.node.mul( 2.0 ).sub( 1.0 );
+		let normalMap = this.node.mul(2.0).sub(1.0);
 
-		if ( scaleNode !== null ) {
+		if (scaleNode !== null) {
 
-			normalMap = vec3( normalMap.xy.mul( scaleNode ), normalMap.z );
+			normalMap = vec3(normalMap.xy.mul(scaleNode), normalMap.z);
 
 		}
 
 		let outputNode = null;
 
-		if ( normalMapType === ObjectSpaceNormalMap ) {
+		if (normalMapType === ObjectSpaceNormalMap) {
 
-			outputNode = modelNormalMatrix.mul( normalMap ).normalize();
+			outputNode = modelNormalMatrix.mul(normalMap).normalize();
 
-		} else if ( normalMapType === TangentSpaceNormalMap ) {
+		} else if (normalMapType === TangentSpaceNormalMap) {
 
-			const tangent = builder.hasGeometryAttribute( 'tangent' );
+			const tangent = builder.hasGeometryAttribute('tangent');
 
-			if ( tangent === true ) {
+			if (tangent === true) {
 
-				outputNode = TBNViewMatrix.mul( normalMap ).normalize();
+				outputNode = TBNViewMatrix.mul(normalMap).normalize();
 
 			} else {
 
-				outputNode = perturbNormal2Arb( {
+				outputNode = perturbNormal2Arb({
 					eye_pos: positionView,
 					surf_norm: normalView,
 					mapN: normalMap,
 					uv: uv()
-				} );
+				});
 
 			}
 
@@ -99,10 +99,10 @@ class NormalMapNode extends TempNode {
 
 export default NormalMapNode;
 
-export const normalMap = nodeProxy( NormalMapNode );
+export const normalMap = nodeProxy(NormalMapNode);
 
-export const TBNViewMatrix = mat3( tangentView, bitangentView, normalView );
+export const TBNViewMatrix = mat3(tangentView, bitangentView, normalView);
 
-addNodeElement( 'normalMap', normalMap );
+addNodeElement('normalMap', normalMap);
 
-addNodeClass( 'NormalMapNode', NormalMapNode );
+addNodeClass('NormalMapNode', NormalMapNode);

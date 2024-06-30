@@ -3,13 +3,13 @@ import { instancedBufferAttribute, instancedDynamicBufferAttribute } from './Buf
 import { normalLocal } from './NormalNode.js';
 import { positionLocal } from './PositionNode.js';
 import { nodeProxy, vec3, mat3, mat4 } from '../shadernode/ShaderNode.js';
-import { DynamicDrawUsage, InstancedInterleavedBuffer } from 'three';
+import { DynamicDrawUsage, InstancedInterleavedBuffer } from '@semiconscious/three';
 
 class InstanceNode extends Node {
 
-	constructor( instanceMesh ) {
+	constructor(instanceMesh) {
 
-		super( 'void' );
+		super('void');
 
 		this.instanceMesh = instanceMesh;
 
@@ -17,27 +17,27 @@ class InstanceNode extends Node {
 
 	}
 
-	setup( /*builder*/ ) {
+	setup( /*builder*/) {
 
 		let instanceMatrixNode = this.instanceMatrixNode;
 
-		if ( instanceMatrixNode === null ) {
+		if (instanceMatrixNode === null) {
 
 			const instanceMesh = this.instanceMesh;
 			const instanceAttribute = instanceMesh.instanceMatrix;
-			const buffer = new InstancedInterleavedBuffer( instanceAttribute.array, 16, 1 );
+			const buffer = new InstancedInterleavedBuffer(instanceAttribute.array, 16, 1);
 
 			const bufferFn = instanceAttribute.usage === DynamicDrawUsage ? instancedDynamicBufferAttribute : instancedBufferAttribute;
 
 			const instanceBuffers = [
 				// F.Signature -> bufferAttribute( array, type, stride, offset )
-				bufferFn( buffer, 'vec4', 16, 0 ),
-				bufferFn( buffer, 'vec4', 16, 4 ),
-				bufferFn( buffer, 'vec4', 16, 8 ),
-				bufferFn( buffer, 'vec4', 16, 12 )
+				bufferFn(buffer, 'vec4', 16, 0),
+				bufferFn(buffer, 'vec4', 16, 4),
+				bufferFn(buffer, 'vec4', 16, 8),
+				bufferFn(buffer, 'vec4', 16, 12)
 			];
 
-			instanceMatrixNode = mat4( ...instanceBuffers );
+			instanceMatrixNode = mat4(...instanceBuffers);
 
 			this.instanceMatrixNode = instanceMatrixNode;
 
@@ -45,20 +45,20 @@ class InstanceNode extends Node {
 
 		// POSITION
 
-		const instancePosition = instanceMatrixNode.mul( positionLocal ).xyz;
+		const instancePosition = instanceMatrixNode.mul(positionLocal).xyz;
 
 		// NORMAL
 
-		const m = mat3( instanceMatrixNode[ 0 ].xyz, instanceMatrixNode[ 1 ].xyz, instanceMatrixNode[ 2 ].xyz );
+		const m = mat3(instanceMatrixNode[0].xyz, instanceMatrixNode[1].xyz, instanceMatrixNode[2].xyz);
 
-		const transformedNormal = normalLocal.div( vec3( m[ 0 ].dot( m[ 0 ] ), m[ 1 ].dot( m[ 1 ] ), m[ 2 ].dot( m[ 2 ] ) ) );
+		const transformedNormal = normalLocal.div(vec3(m[0].dot(m[0]), m[1].dot(m[1]), m[2].dot(m[2])));
 
-		const instanceNormal = m.mul( transformedNormal ).xyz;
+		const instanceNormal = m.mul(transformedNormal).xyz;
 
 		// ASSIGNS
 
-		positionLocal.assign( instancePosition );
-		normalLocal.assign( instanceNormal );
+		positionLocal.assign(instancePosition);
+		normalLocal.assign(instanceNormal);
 
 	}
 
@@ -66,6 +66,6 @@ class InstanceNode extends Node {
 
 export default InstanceNode;
 
-export const instance = nodeProxy( InstanceNode );
+export const instance = nodeProxy(InstanceNode);
 
-addNodeClass( 'InstanceNode', InstanceNode );
+addNodeClass('InstanceNode', InstanceNode);
