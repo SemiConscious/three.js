@@ -1,6 +1,6 @@
 import {
 	Vector2
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Triangle blur shader
@@ -19,7 +19,7 @@ const TriangleBlurShader = {
 	uniforms: {
 
 		'texture': { value: null },
-		'delta': { value: new Vector2( 1, 1 ) }
+		'delta': { value: new Vector2(1, 1) }
 
 	},
 

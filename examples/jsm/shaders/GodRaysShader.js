@@ -1,7 +1,7 @@
 import {
 	Color,
 	Vector3
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * God-rays (crepuscular rays)
@@ -270,11 +270,11 @@ const GodRaysFakeSunShader = {
 		},
 
 		sunColor: {
-			value: new Color( 0xffee00 )
+			value: new Color(0xffee00)
 		},
 
 		bgColor: {
-			value: new Color( 0x000000 )
+			value: new Color(0x000000)
 		}
 
 	},

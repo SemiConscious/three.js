@@ -1,7 +1,7 @@
 import {
 	Matrix4,
 	Vector2
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * TODO
@@ -23,7 +23,7 @@ const SAOShader = {
 		'tDepth': { value: null },
 		'tDiffuse': { value: null },
 		'tNormal': { value: null },
-		'size': { value: new Vector2( 512, 512 ) },
+		'size': { value: new Vector2(512, 512) },
 
 		'cameraNear': { value: 1 },
 		'cameraFar': { value: 100 },

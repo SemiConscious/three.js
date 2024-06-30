@@ -1,12 +1,12 @@
-import { InstancedBufferAttribute } from 'three';
+import { InstancedBufferAttribute } from '@semiconscious/three';
 
 class StorageInstancedBufferAttribute extends InstancedBufferAttribute {
 
-	constructor( array, itemSize, typeClass = Float32Array ) {
+	constructor(array, itemSize, typeClass = Float32Array) {
 
-		if ( ArrayBuffer.isView( array ) === false ) array = new typeClass( array * itemSize );
+		if (ArrayBuffer.isView(array) === false) array = new typeClass(array * itemSize);
 
-		super( array, itemSize );
+		super(array, itemSize);
 
 		this.isStorageInstancedBufferAttribute = true;
 

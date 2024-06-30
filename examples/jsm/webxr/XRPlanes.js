@@ -4,11 +4,11 @@ import {
 	Mesh,
 	MeshBasicMaterial,
 	Object3D
-} from 'three';
+} from '@semiconscious/three';
 
 class XRPlanes extends Object3D {
 
-	constructor( renderer ) {
+	constructor(renderer) {
 
 		super();
 
@@ -18,7 +18,7 @@ class XRPlanes extends Object3D {
 
 		const xr = renderer.xr;
 
-		xr.addEventListener( 'planesdetected', event => {
+		xr.addEventListener('planesdetected', event => {
 
 			const frame = event.data;
 			const planes = frame.detectedPlanes;
@@ -27,15 +27,15 @@ class XRPlanes extends Object3D {
 
 			let planeschanged = false;
 
-			for ( const [ plane, mesh ] of currentPlanes ) {
+			for (const [plane, mesh] of currentPlanes) {
 
-				if ( planes.has( plane ) === false ) {
+				if (planes.has(plane) === false) {
 
 					mesh.geometry.dispose();
 					mesh.material.dispose();
-					this.remove( mesh );
+					this.remove(mesh);
 
-					currentPlanes.delete( plane );
+					currentPlanes.delete(plane);
 
 					planeschanged = true;
 
@@ -43,12 +43,12 @@ class XRPlanes extends Object3D {
 
 			}
 
-			for ( const plane of planes ) {
+			for (const plane of planes) {
 
-				if ( currentPlanes.has( plane ) === false ) {
+				if (currentPlanes.has(plane) === false) {
 
-					const pose = frame.getPose( plane.planeSpace, referenceSpace );
-					matrix.fromArray( pose.transform.matrix );
+					const pose = frame.getPose(plane.planeSpace, referenceSpace);
+					matrix.fromArray(pose.transform.matrix);
 
 					const polygon = plane.polygon;
 
@@ -57,27 +57,27 @@ class XRPlanes extends Object3D {
 					let minZ = Number.MAX_SAFE_INTEGER;
 					let maxZ = Number.MIN_SAFE_INTEGER;
 
-					for ( const point of polygon ) {
+					for (const point of polygon) {
 
-						minX = Math.min( minX, point.x );
-						maxX = Math.max( maxX, point.x );
-						minZ = Math.min( minZ, point.z );
-						maxZ = Math.max( maxZ, point.z );
+						minX = Math.min(minX, point.x);
+						maxX = Math.max(maxX, point.x);
+						minZ = Math.min(minZ, point.z);
+						maxZ = Math.max(maxZ, point.z);
 
 					}
 
 					const width = maxX - minX;
 					const height = maxZ - minZ;
 
-					const geometry = new BoxGeometry( width, 0.01, height );
-					const material = new MeshBasicMaterial( { color: 0xffffff * Math.random() } );
+					const geometry = new BoxGeometry(width, 0.01, height);
+					const material = new MeshBasicMaterial({ color: 0xffffff * Math.random() });
 
-					const mesh = new Mesh( geometry, material );
-					mesh.position.setFromMatrixPosition( matrix );
-					mesh.quaternion.setFromRotationMatrix( matrix );
-					this.add( mesh );
+					const mesh = new Mesh(geometry, material);
+					mesh.position.setFromMatrixPosition(matrix);
+					mesh.quaternion.setFromRotationMatrix(matrix);
+					this.add(mesh);
 
-					currentPlanes.set( plane, mesh );
+					currentPlanes.set(plane, mesh);
 
 					planeschanged = true;
 
@@ -85,13 +85,13 @@ class XRPlanes extends Object3D {
 
 			}
 
-			if ( planeschanged ) {
+			if (planeschanged) {
 
-				this.dispatchEvent( { type: 'planeschanged' } );
+				this.dispatchEvent({ type: 'planeschanged' });
 
 			}
 
-		} );
+		});
 
 	}
 

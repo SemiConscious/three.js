@@ -2,7 +2,7 @@ import {
 	UniformsLib,
 	UniformsUtils,
 	Matrix4
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * Mesh Velocity Shader @bhouston
@@ -12,7 +12,7 @@ const VelocityShader = {
 
 	name: 'VelocityShader',
 
-	uniforms: UniformsUtils.merge( [
+	uniforms: UniformsUtils.merge([
 		UniformsLib.common,
 		UniformsLib.displacementmap,
 		{
@@ -20,7 +20,7 @@ const VelocityShader = {
 			currentProjectionViewMatrix: { value: new Matrix4() },
 			previousProjectionViewMatrix: { value: new Matrix4() }
 		}
-	] ),
+	]),
 
 	vertexShader: /* glsl */`
 #define NORMAL

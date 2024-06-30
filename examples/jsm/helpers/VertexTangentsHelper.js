@@ -4,23 +4,23 @@ import {
 	LineSegments,
 	LineBasicMaterial,
 	Vector3
-} from 'three';
+} from '@semiconscious/three';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();
 
 class VertexTangentsHelper extends LineSegments {
 
-	constructor( object, size = 1, color = 0x00ffff ) {
+	constructor(object, size = 1, color = 0x00ffff) {
 
 		const geometry = new BufferGeometry();
 
 		const nTangents = object.geometry.attributes.tangent.count;
-		const positions = new Float32BufferAttribute( nTangents * 2 * 3, 3 );
+		const positions = new Float32BufferAttribute(nTangents * 2 * 3, 3);
 
-		geometry.setAttribute( 'position', positions );
+		geometry.setAttribute('position', positions);
 
-		super( geometry, new LineBasicMaterial( { color, toneMapped: false } ) );
+		super(geometry, new LineBasicMaterial({ color, toneMapped: false }));
 
 		this.object = object;
 		this.size = size;
@@ -36,7 +36,7 @@ class VertexTangentsHelper extends LineSegments {
 
 	update() {
 
-		this.object.updateMatrixWorld( true );
+		this.object.updateMatrixWorld(true);
 
 		const matrixWorld = this.object.matrixWorld;
 
@@ -54,19 +54,19 @@ class VertexTangentsHelper extends LineSegments {
 
 		// for simplicity, ignore index and drawcalls, and render every tangent
 
-		for ( let j = 0, jl = objPos.count; j < jl; j ++ ) {
+		for (let j = 0, jl = objPos.count; j < jl; j++) {
 
-			_v1.fromBufferAttribute( objPos, j ).applyMatrix4( matrixWorld );
+			_v1.fromBufferAttribute(objPos, j).applyMatrix4(matrixWorld);
 
-			_v2.fromBufferAttribute( objTan, j );
+			_v2.fromBufferAttribute(objTan, j);
 
-			_v2.transformDirection( matrixWorld ).multiplyScalar( this.size ).add( _v1 );
+			_v2.transformDirection(matrixWorld).multiplyScalar(this.size).add(_v1);
 
-			position.setXYZ( idx, _v1.x, _v1.y, _v1.z );
+			position.setXYZ(idx, _v1.x, _v1.y, _v1.z);
 
 			idx = idx + 1;
 
-			position.setXYZ( idx, _v2.x, _v2.y, _v2.z );
+			position.setXYZ(idx, _v2.x, _v2.y, _v2.z);
 
 			idx = idx + 1;
 

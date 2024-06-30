@@ -1,12 +1,12 @@
 import NodeMaterial, { addNodeMaterial } from './NodeMaterial.js';
 
-import { LineBasicMaterial } from 'three';
+import { LineBasicMaterial } from '@semiconscious/three';
 
 const defaultValues = new LineBasicMaterial();
 
 class LineBasicNodeMaterial extends NodeMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -15,9 +15,9 @@ class LineBasicNodeMaterial extends NodeMaterial {
 		this.lights = false;
 		this.normals = false;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
@@ -25,4 +25,4 @@ class LineBasicNodeMaterial extends NodeMaterial {
 
 export default LineBasicNodeMaterial;
 
-addNodeMaterial( 'LineBasicNodeMaterial', LineBasicNodeMaterial );
+addNodeMaterial('LineBasicNodeMaterial', LineBasicNodeMaterial);

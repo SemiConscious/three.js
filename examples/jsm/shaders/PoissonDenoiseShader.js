@@ -2,7 +2,7 @@ import {
 	Matrix4,
 	Vector2,
 	Vector3,
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * References:
@@ -16,7 +16,7 @@ const PoissonDenoiseShader = {
 
 	defines: {
 		'SAMPLES': 16,
-		'SAMPLE_VECTORS': generatePdSamplePointInitializer( 16, 2, 1 ),
+		'SAMPLE_VECTORS': generatePdSamplePointInitializer(16, 2, 1),
 		'NORMAL_VECTOR_TYPE': 1,
 		'DEPTH_VALUE_SOURCE': 0,
 	},
@@ -186,7 +186,7 @@ const PoissonDenoiseShader = {
 
 };
 
-function generatePdSamplePointInitializer( samples, rings, radiusExponent ) {
+function generatePdSamplePointInitializer(samples, rings, radiusExponent) {
 
 	const poissonDisk = generateDenoiseSamples(
 		samples,
@@ -196,10 +196,10 @@ function generatePdSamplePointInitializer( samples, rings, radiusExponent ) {
 
 	let glslCode = 'vec3[SAMPLES](';
 
-	for ( let i = 0; i < samples; i ++ ) {
+	for (let i = 0; i < samples; i++) {
 
-		const sample = poissonDisk[ i ];
-		glslCode += `vec3(${sample.x}, ${sample.y}, ${sample.z})${( i < samples - 1 ) ? ',' : ')'}`;
+		const sample = poissonDisk[i];
+		glslCode += `vec3(${sample.x}, ${sample.y}, ${sample.z})${(i < samples - 1) ? ',' : ')'}`;
 
 	}
 
@@ -207,15 +207,15 @@ function generatePdSamplePointInitializer( samples, rings, radiusExponent ) {
 
 }
 
-function generateDenoiseSamples( numSamples, numRings, radiusExponent ) {
+function generateDenoiseSamples(numSamples, numRings, radiusExponent) {
 
 	const samples = [];
 
-	for ( let i = 0; i < numSamples; i ++ ) {
+	for (let i = 0; i < numSamples; i++) {
 
 		const angle = 2 * Math.PI * numRings * i / numSamples;
-		const radius = Math.pow( i / ( numSamples - 1 ), radiusExponent );
-		samples.push( new Vector3( Math.cos( angle ), Math.sin( angle ), radius ) );
+		const radius = Math.pow(i / (numSamples - 1), radiusExponent);
+		samples.push(new Vector3(Math.cos(angle), Math.sin(angle), radius));
 
 	}
 

@@ -5,13 +5,13 @@
  *
  */
 
-import { UniformsUtils, UniformsLib, ShaderMaterial, Color, MultiplyOperation } from 'three';
+import { UniformsUtils, UniformsLib, ShaderMaterial, Color, MultiplyOperation } from '@semiconscious/three';
 
 const GouraudShader = {
 
 	name: 'GouraudShader',
 
-	uniforms: UniformsUtils.merge( [
+	uniforms: UniformsUtils.merge([
 		UniformsLib.common,
 		UniformsLib.specularmap,
 		UniformsLib.envmap,
@@ -21,9 +21,9 @@ const GouraudShader = {
 		UniformsLib.fog,
 		UniformsLib.lights,
 		{
-			emissive: { value: new Color( 0x000000 ) }
+			emissive: { value: new Color(0x000000) }
 		}
-	] ),
+	]),
 
 	vertexShader: /* glsl */`
 
@@ -309,7 +309,7 @@ const GouraudShader = {
 
 class MeshGouraudMaterial extends ShaderMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -346,8 +346,8 @@ class MeshGouraudMaterial extends ShaderMaterial {
 
 		const shader = GouraudShader;
 
-		this.defines = Object.assign( {}, shader.defines );
-		this.uniforms = UniformsUtils.clone( shader.uniforms );
+		this.defines = Object.assign({}, shader.defines);
+		this.uniforms = UniformsUtils.clone(shader.uniforms);
 		this.vertexShader = shader.vertexShader;
 		this.fragmentShader = shader.fragmentShader;
 
@@ -357,37 +357,37 @@ class MeshGouraudMaterial extends ShaderMaterial {
 			'envMap', 'reflectivity', 'refractionRatio', 'opacity', 'diffuse'
 		];
 
-		for ( const propertyName of exposePropertyNames ) {
+		for (const propertyName of exposePropertyNames) {
 
-			Object.defineProperty( this, propertyName, {
+			Object.defineProperty(this, propertyName, {
 
 				get: function () {
 
-					return this.uniforms[ propertyName ].value;
+					return this.uniforms[propertyName].value;
 
 				},
 
-				set: function ( value ) {
+				set: function (value) {
 
-					this.uniforms[ propertyName ].value = value;
+					this.uniforms[propertyName].value = value;
 
 				}
 
-			} );
+			});
 
 		}
 
-		Object.defineProperty( this, 'color', Object.getOwnPropertyDescriptor( this, 'diffuse' ) );
+		Object.defineProperty(this, 'color', Object.getOwnPropertyDescriptor(this, 'diffuse'));
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
-	copy( source ) {
+	copy(source) {
 
-		super.copy( source );
+		super.copy(source);
 
-		this.color.copy( source.color );
+		this.color.copy(source.color);
 
 		this.map = source.map;
 
@@ -397,7 +397,7 @@ class MeshGouraudMaterial extends ShaderMaterial {
 		this.aoMap = source.aoMap;
 		this.aoMapIntensity = source.aoMapIntensity;
 
-		this.emissive.copy( source.emissive );
+		this.emissive.copy(source.emissive);
 		this.emissiveMap = source.emissiveMap;
 		this.emissiveIntensity = source.emissiveIntensity;
 

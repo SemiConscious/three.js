@@ -1,40 +1,40 @@
-import * as THREE from 'three';
+import * as THREE from '@semiconscious/three';
 import { OrbitControls } from '../../examples/jsm/controls/OrbitControls.js';
 
 export const threejsLessonUtils = {
 	_afterPrettifyFuncs: [],
-	init( options = { threejsOptions: {} } ) {
+	init(options = { threejsOptions: {} }) {
 
-		if ( this.renderer ) {
+		if (this.renderer) {
 
 			return;
 
 		}
 
-		const canvas = document.createElement( 'canvas' );
+		const canvas = document.createElement('canvas');
 		canvas.id = 'c';
-		document.body.appendChild( canvas );
-		const renderer = new THREE.WebGLRenderer( {
+		document.body.appendChild(canvas);
+		const renderer = new THREE.WebGLRenderer({
 			canvas,
 			alpha: true,
 			antialias: true,
 			powerPreference: 'low-power',
 			...options.threejsOptions,
-		} );
+		});
 		this.pixelRatio = window.devicePixelRatio;
 
 		this.renderer = renderer;
 		this.elemToRenderFuncMap = new Map();
 
-		const resizeRendererToDisplaySize = ( renderer ) => {
+		const resizeRendererToDisplaySize = (renderer) => {
 
 			const canvas = renderer.domElement;
 			const width = canvas.clientWidth * this.pixelRatio | 0;
 			const height = canvas.clientHeight * this.pixelRatio | 0;
 			const needResize = canvas.width !== width || canvas.height !== height;
-			if ( needResize ) {
+			if (needResize) {
 
-				renderer.setSize( width, height, false );
+				renderer.setSize(width, height, false);
 
 			}
 
@@ -42,41 +42,41 @@ export const threejsLessonUtils = {
 
 		};
 
-		const clearColor = new THREE.Color( '#000' );
+		const clearColor = new THREE.Color('#000');
 		let needsUpdate = true;
 		let rafRequestId;
 		let rafRunning;
 
-		const render = ( time ) => {
+		const render = (time) => {
 
 			rafRequestId = undefined;
 			time *= 0.001;
 
-			const resized = resizeRendererToDisplaySize( renderer );
+			const resized = resizeRendererToDisplaySize(renderer);
 
 			// only update if we drew last time
 			// so the browser will not recomposite the page
 			// of nothing is being drawn.
-			if ( needsUpdate ) {
+			if (needsUpdate) {
 
 				needsUpdate = false;
 
-				renderer.setScissorTest( false );
-				renderer.setClearColor( clearColor, 0 );
-				renderer.clear( true, true );
-				renderer.setScissorTest( true );
+				renderer.setScissorTest(false);
+				renderer.setClearColor(clearColor, 0);
+				renderer.clear(true, true);
+				renderer.setScissorTest(true);
 
 			}
 
-			this.elementsOnScreen.forEach( elem => {
+			this.elementsOnScreen.forEach(elem => {
 
-				const fn = this.elemToRenderFuncMap.get( elem );
-				const wasRendered = fn( renderer, time, resized );
+				const fn = this.elemToRenderFuncMap.get(elem);
+				const wasRendered = fn(renderer, time, resized);
 				needsUpdate = needsUpdate || wasRendered;
 
-			} );
+			});
 
-			if ( needsUpdate ) {
+			if (needsUpdate) {
 
 				// maybe there is another way. Originally I used `position: fixed`
 				// but the problem is if we can't render as fast as the browser
@@ -96,7 +96,7 @@ export const threejsLessonUtils = {
 
 			}
 
-			if ( rafRunning ) {
+			if (rafRunning) {
 
 				startRAFLoop();
 
@@ -107,26 +107,26 @@ export const threejsLessonUtils = {
 		function startRAFLoop() {
 
 			rafRunning = true;
-			if ( ! rafRequestId ) {
+			if (!rafRequestId) {
 
-				rafRequestId = requestAnimationFrame( render );
+				rafRequestId = requestAnimationFrame(render);
 
 			}
 
 		}
 
 		this.elementsOnScreen = new Set();
-		this.intersectionObserver = new IntersectionObserver( ( entries ) => {
+		this.intersectionObserver = new IntersectionObserver((entries) => {
 
-			entries.forEach( entry => {
+			entries.forEach(entry => {
 
-				if ( entry.isIntersecting ) {
+				if (entry.isIntersecting) {
 
-					this.elementsOnScreen.add( entry.target );
+					this.elementsOnScreen.add(entry.target);
 
 				} else {
 
-					this.elementsOnScreen.delete( entry.target );
+					this.elementsOnScreen.delete(entry.target);
 
 				}
 				// Each entry describes an intersection change for one observed
@@ -139,8 +139,8 @@ export const threejsLessonUtils = {
 				//   entry.target
 				//   entry.time
 
-			} );
-			if ( this.elementsOnScreen.size > 0 ) {
+			});
+			if (this.elementsOnScreen.size > 0) {
 
 				startRAFLoop();
 
@@ -150,28 +150,28 @@ export const threejsLessonUtils = {
 
 			}
 
-		} );
+		});
 
 
 	},
-	addDiagrams( diagrams ) {
+	addDiagrams(diagrams) {
 
-		[ ...document.querySelectorAll( '[data-diagram]' ) ].forEach( ( elem ) => {
+		[...document.querySelectorAll('[data-diagram]')].forEach((elem) => {
 
 			const name = elem.dataset.diagram;
-			const info = diagrams[ name ];
-			if ( ! info ) {
+			const info = diagrams[name];
+			if (!info) {
 
-				throw new Error( `no diagram: ${name}` );
+				throw new Error(`no diagram: ${name}`);
 
 			}
 
-			this.addDiagram( elem, info );
+			this.addDiagram(elem, info);
 
-		} );
+		});
 
 	},
-	addDiagram( elem, info ) {
+	addDiagram(elem, info) {
 
 		this.init();
 
@@ -180,12 +180,12 @@ export const threejsLessonUtils = {
 		const aspect = 1;
 		const near = 0.1;
 		const far = 50;
-		let camera = new THREE.PerspectiveCamera( targetFOVDeg, aspect, near, far );
+		let camera = new THREE.PerspectiveCamera(targetFOVDeg, aspect, near, far);
 		camera.position.z = 15;
-		scene.add( camera );
+		scene.add(camera);
 
 		const root = new THREE.Object3D();
-		scene.add( root );
+		scene.add(root);
 
 		const renderInfo = {
 			pixelRatio: this.pixelRatio,
@@ -196,8 +196,8 @@ export const threejsLessonUtils = {
 			elem,
 		};
 
-		const obj3D = info.create( { scene, camera, renderInfo } );
-		const promise = ( obj3D instanceof Promise ) ? obj3D : Promise.resolve( obj3D );
+		const obj3D = info.create({ scene, camera, renderInfo });
+		const promise = (obj3D instanceof Promise) ? obj3D : Promise.resolve(obj3D);
 
 		const updateFunctions = [];
 		const resizeFunctions = [];
@@ -209,55 +209,55 @@ export const threejsLessonUtils = {
 			// },
 			// update(time, renderInfo) {
 			// },
-			render( renderInfo ) {
+			render(renderInfo) {
 
-				renderInfo.renderer.render( renderInfo.scene, renderInfo.camera );
+				renderInfo.renderer.render(renderInfo.scene, renderInfo.camera);
 
 			},
 		};
 
-		promise.then( ( result ) => {
+		promise.then((result) => {
 
 			const info = result instanceof THREE.Object3D ? {
 				obj3D: result,
 			} : result;
-			if ( info.obj3D ) {
+			if (info.obj3D) {
 
-				root.add( info.obj3D );
-
-			}
-
-			if ( info.update ) {
-
-				updateFunctions.push( info.update );
+				root.add(info.obj3D);
 
 			}
 
-			if ( info.resize ) {
+			if (info.update) {
 
-				resizeFunctions.push( info.resize );
+				updateFunctions.push(info.update);
 
 			}
 
-			if ( info.camera ) {
+			if (info.resize) {
+
+				resizeFunctions.push(info.resize);
+
+			}
+
+			if (info.camera) {
 
 				camera = info.camera;
 				renderInfo.camera = camera;
 
 			}
 
-			Object.assign( settings, info );
+			Object.assign(settings, info);
 			targetFOVDeg = camera.fov;
 
-			if ( settings.trackball !== false ) {
+			if (settings.trackball !== false) {
 
-				const controls = new OrbitControls( camera, elem );
+				const controls = new OrbitControls(camera, elem);
 				controls.rotateSpeed = 1 / 6;
 				controls.enableZoom = false;
 				controls.enablePan = false;
-				elem.removeAttribute( 'tabIndex' );
+				elem.removeAttribute('tabIndex');
 				//resizeFunctions.push(controls.handleResize.bind(controls));
-				updateFunctions.push( controls.update.bind( controls ) );
+				updateFunctions.push(controls.update.bind(controls));
 
 			}
 
@@ -266,28 +266,28 @@ export const threejsLessonUtils = {
 			// We really want to rotate the object itself but there's no
 			// controls for that so we fake it by putting all the lights
 			// on the camera so they move with it.
-			if ( settings.lights !== false ) {
+			if (settings.lights !== false) {
 
-				camera.add( new THREE.HemisphereLight( 0xaaaaaa, 0x444444, .5 ) );
-				const light = new THREE.DirectionalLight( 0xffffff, 1 );
-				light.position.set( - 1, 2, 4 - 15 );
-				camera.add( light );
+				camera.add(new THREE.HemisphereLight(0xaaaaaa, 0x444444, .5));
+				const light = new THREE.DirectionalLight(0xffffff, 1);
+				light.position.set(- 1, 2, 4 - 15);
+				camera.add(light);
 
 			}
 
-		} );
+		});
 
 		let oldWidth = - 1;
 		let oldHeight = - 1;
 
-		const render = ( renderer, time ) => {
+		const render = (renderer, time) => {
 
 			root.rotation.x = time * .1;
 			root.rotation.y = time * .11;
 
 			const rect = elem.getBoundingClientRect();
-			if ( rect.bottom < 0 || rect.top > renderer.domElement.clientHeight ||
-          rect.right < 0 || rect.left > renderer.domElement.clientWidth ) {
+			if (rect.bottom < 0 || rect.top > renderer.domElement.clientHeight ||
+				rect.right < 0 || rect.left > renderer.domElement.clientWidth) {
 
 				return false;
 
@@ -296,52 +296,52 @@ export const threejsLessonUtils = {
 			renderInfo.width = rect.width * this.pixelRatio;
 			renderInfo.height = rect.height * this.pixelRatio;
 			renderInfo.left = rect.left * this.pixelRatio;
-			renderInfo.bottom = ( renderer.domElement.clientHeight - rect.bottom ) * this.pixelRatio;
+			renderInfo.bottom = (renderer.domElement.clientHeight - rect.bottom) * this.pixelRatio;
 
-			if ( renderInfo.width !== oldWidth || renderInfo.height !== oldHeight ) {
+			if (renderInfo.width !== oldWidth || renderInfo.height !== oldHeight) {
 
 				oldWidth = renderInfo.width;
 				oldHeight = renderInfo.height;
-				resizeFunctions.forEach( fn => fn( renderInfo ) );
+				resizeFunctions.forEach(fn => fn(renderInfo));
 
 			}
 
-			updateFunctions.forEach( fn => fn( time, renderInfo ) );
+			updateFunctions.forEach(fn => fn(time, renderInfo));
 
 			const aspect = renderInfo.width / renderInfo.height;
 			const fovDeg = aspect >= 1
 				? targetFOVDeg
-				: THREE.MathUtils.radToDeg( 2 * Math.atan( Math.tan( THREE.MathUtils.degToRad( targetFOVDeg ) * .5 ) / aspect ) );
+				: THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(targetFOVDeg) * .5) / aspect));
 
 			camera.fov = fovDeg;
 			camera.aspect = aspect;
 			camera.updateProjectionMatrix();
 
-			renderer.setViewport( renderInfo.left, renderInfo.bottom, renderInfo.width, renderInfo.height );
-			renderer.setScissor( renderInfo.left, renderInfo.bottom, renderInfo.width, renderInfo.height );
+			renderer.setViewport(renderInfo.left, renderInfo.bottom, renderInfo.width, renderInfo.height);
+			renderer.setScissor(renderInfo.left, renderInfo.bottom, renderInfo.width, renderInfo.height);
 
-			settings.render( renderInfo );
+			settings.render(renderInfo);
 
 			return true;
 
 		};
 
-		this.intersectionObserver.observe( elem );
-		this.elemToRenderFuncMap.set( elem, render );
+		this.intersectionObserver.observe(elem);
+		this.elemToRenderFuncMap.set(elem, render);
 
 	},
-	onAfterPrettify( fn ) {
+	onAfterPrettify(fn) {
 
-		this._afterPrettifyFuncs.push( fn );
+		this._afterPrettifyFuncs.push(fn);
 
 	},
 	afterPrettify() {
 
-		this._afterPrettifyFuncs.forEach( ( fn ) => {
+		this._afterPrettifyFuncs.forEach((fn) => {
 
 			fn();
 
-		} );
+		});
 
 	},
 };

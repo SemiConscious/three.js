@@ -2,19 +2,19 @@ import TextureNode from './TextureNode.js';
 import { reflectVector } from './ReflectVectorNode.js';
 import { addNodeClass } from '../core/Node.js';
 import { addNodeElement, nodeProxy, vec3 } from '../shadernode/ShaderNode.js';
-import { WebGPUCoordinateSystem } from 'three';
+import { WebGPUCoordinateSystem } from '@semiconscious/three';
 
 class CubeTextureNode extends TextureNode {
 
-	constructor( value, uvNode = null, levelNode = null ) {
+	constructor(value, uvNode = null, levelNode = null) {
 
-		super( value, uvNode, levelNode );
+		super(value, uvNode, levelNode);
 
 		this.isCubeTextureNode = true;
 
 	}
 
-	getInputType( /*builder*/ ) {
+	getInputType( /*builder*/) {
 
 		return 'cubeTexture';
 
@@ -26,15 +26,15 @@ class CubeTextureNode extends TextureNode {
 
 	}
 
-	setUpdateMatrix( /*updateMatrix*/ ) { } // Ignore .updateMatrix for CubeTextureNode
+	setUpdateMatrix( /*updateMatrix*/) { } // Ignore .updateMatrix for CubeTextureNode
 
-	setupUV( builder, uvNode ) {
+	setupUV(builder, uvNode) {
 
 		const texture = this.value;
 
-		if ( builder.renderer.coordinateSystem === WebGPUCoordinateSystem || ! texture.isRenderTargetTexture ) {
+		if (builder.renderer.coordinateSystem === WebGPUCoordinateSystem || !texture.isRenderTargetTexture) {
 
-			return vec3( uvNode.x.negate(), uvNode.yz );
+			return vec3(uvNode.x.negate(), uvNode.yz);
 
 		} else {
 
@@ -44,9 +44,9 @@ class CubeTextureNode extends TextureNode {
 
 	}
 
-	generateUV( builder, cubeUV ) {
+	generateUV(builder, cubeUV) {
 
-		return cubeUV.build( builder, 'vec3' );
+		return cubeUV.build(builder, 'vec3');
 
 	}
 
@@ -54,8 +54,8 @@ class CubeTextureNode extends TextureNode {
 
 export default CubeTextureNode;
 
-export const cubeTexture = nodeProxy( CubeTextureNode );
+export const cubeTexture = nodeProxy(CubeTextureNode);
 
-addNodeElement( 'cubeTexture', cubeTexture );
+addNodeElement('cubeTexture', cubeTexture);
 
-addNodeClass( 'CubeTextureNode', CubeTextureNode );
+addNodeClass('CubeTextureNode', CubeTextureNode);

@@ -1,10 +1,10 @@
 import DataMap from './DataMap.js';
 import { AttributeType } from './Constants.js';
-import { DynamicDrawUsage } from 'three';
+import { DynamicDrawUsage } from '@semiconscious/three';
 
 class Attributes extends DataMap {
 
-	constructor( backend ) {
+	constructor(backend) {
 
 		super();
 
@@ -12,47 +12,47 @@ class Attributes extends DataMap {
 
 	}
 
-	delete( attribute ) {
+	delete(attribute) {
 
-		const attributeData = super.delete( attribute );
+		const attributeData = super.delete(attribute);
 
-		if ( attributeData !== undefined ) {
+		if (attributeData !== undefined) {
 
-			this.backend.destroyAttribute( attribute );
+			this.backend.destroyAttribute(attribute);
 
 		}
 
 	}
 
-	update( attribute, type ) {
+	update(attribute, type) {
 
-		const data = this.get( attribute );
+		const data = this.get(attribute);
 
-		if ( data.version === undefined ) {
+		if (data.version === undefined) {
 
-			if ( type === AttributeType.VERTEX ) {
+			if (type === AttributeType.VERTEX) {
 
-				this.backend.createAttribute( attribute );
+				this.backend.createAttribute(attribute);
 
-			} else if ( type === AttributeType.INDEX ) {
+			} else if (type === AttributeType.INDEX) {
 
-				this.backend.createIndexAttribute( attribute );
+				this.backend.createIndexAttribute(attribute);
 
-			} else if ( type === AttributeType.STORAGE ) {
+			} else if (type === AttributeType.STORAGE) {
 
-				this.backend.createStorageAttribute( attribute );
+				this.backend.createStorageAttribute(attribute);
 
 			}
 
-			data.version = this._getBufferAttribute( attribute ).version;
+			data.version = this._getBufferAttribute(attribute).version;
 
 		} else {
 
-			const bufferAttribute = this._getBufferAttribute( attribute );
+			const bufferAttribute = this._getBufferAttribute(attribute);
 
-			if ( data.version < bufferAttribute.version || bufferAttribute.usage === DynamicDrawUsage ) {
+			if (data.version < bufferAttribute.version || bufferAttribute.usage === DynamicDrawUsage) {
 
-				this.backend.updateAttribute( attribute );
+				this.backend.updateAttribute(attribute);
 
 				data.version = bufferAttribute.version;
 
@@ -62,9 +62,9 @@ class Attributes extends DataMap {
 
 	}
 
-	_getBufferAttribute( attribute ) {
+	_getBufferAttribute(attribute) {
 
-		if ( attribute.isInterleavedBufferAttribute ) attribute = attribute.data;
+		if (attribute.isInterleavedBufferAttribute) attribute = attribute.data;
 
 		return attribute;
 

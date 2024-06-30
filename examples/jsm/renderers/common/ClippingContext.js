@@ -1,4 +1,4 @@
-import { Matrix3, Plane, Vector4 } from 'three';
+import { Matrix3, Plane, Vector4 } from '@semiconscious/three';
 
 const _plane = new Plane();
 const _viewNormalMatrix = new Matrix3();
@@ -9,7 +9,7 @@ class ClippingContext {
 
 	constructor() {
 
-		this.version = ++ _clippingContextVersion;
+		this.version = ++_clippingContextVersion;
 
 		this.globalClippingCount = 0;
 
@@ -23,16 +23,16 @@ class ClippingContext {
 
 	}
 
-	projectPlanes( source, offset ) {
+	projectPlanes(source, offset) {
 
 		const l = source.length;
 		const planes = this.planes;
 
-		for ( let i = 0; i < l; i ++ ) {
+		for (let i = 0; i < l; i++) {
 
-			_plane.copy( source[ i ] ).applyMatrix4( this.viewMatrix, _viewNormalMatrix );
+			_plane.copy(source[i]).applyMatrix4(this.viewMatrix, _viewNormalMatrix);
 
-			const v = planes[ offset + i ];
+			const v = planes[offset + i];
 			const normal = _plane.normal;
 
 			v.x = - normal.x;
@@ -44,26 +44,26 @@ class ClippingContext {
 
 	}
 
-	updateGlobal( renderer, camera ) {
+	updateGlobal(renderer, camera) {
 
 		const rendererClippingPlanes = renderer.clippingPlanes;
 		this.viewMatrix = camera.matrixWorldInverse;
 
-		_viewNormalMatrix.getNormalMatrix( this.viewMatrix );
+		_viewNormalMatrix.getNormalMatrix(this.viewMatrix);
 
 		let update = false;
 
-		if ( Array.isArray( rendererClippingPlanes ) && rendererClippingPlanes.length !== 0 ) {
+		if (Array.isArray(rendererClippingPlanes) && rendererClippingPlanes.length !== 0) {
 
 			const l = rendererClippingPlanes.length;
 
-			if ( l !== this.globalClippingCount ) {
+			if (l !== this.globalClippingCount) {
 
 				const planes = [];
 
-				for ( let i = 0; i < l; i ++ ) {
+				for (let i = 0; i < l; i++) {
 
-					planes.push( new Vector4() );
+					planes.push(new Vector4());
 
 				}
 
@@ -74,9 +74,9 @@ class ClippingContext {
 
 			}
 
-			this.projectPlanes( rendererClippingPlanes, 0 );
+			this.projectPlanes(rendererClippingPlanes, 0);
 
-		} else if ( this.globalClippingCount !== 0 ) {
+		} else if (this.globalClippingCount !== 0) {
 
 			this.globalClippingCount = 0;
 			this.planes = [];
@@ -84,26 +84,26 @@ class ClippingContext {
 
 		}
 
-		if ( renderer.localClippingEnabled !== this.localClippingEnabled ) {
+		if (renderer.localClippingEnabled !== this.localClippingEnabled) {
 
 			this.localClippingEnabled = renderer.localClippingEnabled;
 			update = true;
 
 		}
 
-		if ( update ) this.version = _clippingContextVersion ++;
+		if (update) this.version = _clippingContextVersion++;
 
 	}
 
-	update( parent, material ) {
+	update(parent, material) {
 
 		let update = false;
 
-		if ( this !== parent && parent.version !== this.parentVersion ) {
+		if (this !== parent && parent.version !== this.parentVersion) {
 
-			this.globalClippingCount =  material.isShadowNodeMaterial ? 0 : parent.globalClippingCount;
+			this.globalClippingCount = material.isShadowNodeMaterial ? 0 : parent.globalClippingCount;
 			this.localClippingEnabled = parent.localClippingEnabled;
-			this.planes = Array.from( parent.planes );
+			this.planes = Array.from(parent.planes);
 			this.parentVersion = parent.version;
 			this.viewMatrix = parent.viewMatrix;
 
@@ -112,23 +112,23 @@ class ClippingContext {
 
 		}
 
-		if ( this.localClippingEnabled ) {
+		if (this.localClippingEnabled) {
 
 			const localClippingPlanes = material.clippingPlanes;
 
-			if ( ( Array.isArray( localClippingPlanes ) && localClippingPlanes.length !== 0 ) ) {
+			if ((Array.isArray(localClippingPlanes) && localClippingPlanes.length !== 0)) {
 
 				const l = localClippingPlanes.length;
 				const planes = this.planes;
 				const offset = this.globalClippingCount;
 
-				if ( update || l !== this.localClippingCount ) {
+				if (update || l !== this.localClippingCount) {
 
 					planes.length = offset + l;
 
-					for ( let i = 0; i < l; i ++ ) {
+					for (let i = 0; i < l; i++) {
 
-						planes[ offset + i ] = new Vector4();
+						planes[offset + i] = new Vector4();
 
 					}
 
@@ -137,17 +137,17 @@ class ClippingContext {
 
 				}
 
-				this.projectPlanes( localClippingPlanes, offset );
+				this.projectPlanes(localClippingPlanes, offset);
 
 
-			} else if ( this.localClippingCount !== 0 ) {
+			} else if (this.localClippingCount !== 0) {
 
 				this.localClippingCount = 0;
 				update = true;
 
 			}
 
-			if ( this.localClipIntersection !== material.clipIntersection ) {
+			if (this.localClipIntersection !== material.clipIntersection) {
 
 				this.localClipIntersection = material.clipIntersection;
 				update = true;
@@ -156,7 +156,7 @@ class ClippingContext {
 
 		}
 
-		if ( update ) this.version = _clippingContextVersion ++;
+		if (update) this.version = _clippingContextVersion++;
 
 	}
 

@@ -13,7 +13,7 @@
  *  * Add mmd_toon_matcap_fragment.
  */
 
-import { UniformsUtils, ShaderLib } from 'three';
+import { UniformsUtils, ShaderLib } from '@semiconscious/three';
 
 const lights_mmd_toon_pars_fragment = /* glsl */`
 varying vec3 vViewPosition;
@@ -79,11 +79,11 @@ const MMDToonShader = {
 		MATCAP_BLENDING_ADD: true,
 	},
 
-	uniforms: UniformsUtils.merge( [
+	uniforms: UniformsUtils.merge([
 		ShaderLib.toon.uniforms,
 		ShaderLib.phong.uniforms,
 		ShaderLib.matcap.uniforms,
-	] ),
+	]),
 
 	vertexShader:
 		ShaderLib.phong.vertexShader

@@ -2,19 +2,19 @@ import AnalyticLightNode from './AnalyticLightNode.js';
 import { addLightNode } from './LightsNode.js';
 import { addNodeClass } from '../core/Node.js';
 
-import { AmbientLight } from 'three';
+import { AmbientLight } from '@semiconscious/three';
 
 class AmbientLightNode extends AnalyticLightNode {
 
-	constructor( light = null ) {
+	constructor(light = null) {
 
-		super( light );
+		super(light);
 
 	}
 
-	setup( { context } ) {
+	setup({ context }) {
 
-		context.irradiance.addAssign( this.colorNode );
+		context.irradiance.addAssign(this.colorNode);
 
 	}
 
@@ -22,6 +22,6 @@ class AmbientLightNode extends AnalyticLightNode {
 
 export default AmbientLightNode;
 
-addNodeClass( 'AmbientLightNode', AmbientLightNode );
+addNodeClass('AmbientLightNode', AmbientLightNode);
 
-addLightNode( AmbientLight, AmbientLightNode );
+addLightNode(AmbientLight, AmbientLightNode);

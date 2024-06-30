@@ -8,18 +8,18 @@ import {
 	WebGLRenderer,
 	CanvasTexture,
 	SRGBColorSpace
-} from 'three';
+} from '@semiconscious/three';
 
 let _renderer;
 let fullscreenQuadGeometry;
 let fullscreenQuadMaterial;
 let fullscreenQuad;
 
-export function decompress( texture, maxTextureSize = Infinity, renderer = null ) {
+export function decompress(texture, maxTextureSize = Infinity, renderer = null) {
 
-	if ( ! fullscreenQuadGeometry ) fullscreenQuadGeometry = new PlaneGeometry( 2, 2, 1, 1 );
-	if ( ! fullscreenQuadMaterial ) fullscreenQuadMaterial = new ShaderMaterial( {
-		uniforms: { blitTexture: new Uniform( texture ) },
+	if (!fullscreenQuadGeometry) fullscreenQuadGeometry = new PlaneGeometry(2, 2, 1, 1);
+	if (!fullscreenQuadMaterial) fullscreenQuadMaterial = new ShaderMaterial({
+		uniforms: { blitTexture: new Uniform(texture) },
 		vertexShader: `
 			varying vec2 vUv;
 			void main(){
@@ -39,45 +39,45 @@ export function decompress( texture, maxTextureSize = Infinity, renderer = null 
 				gl_FragColor = texture2D( blitTexture, vUv);
 				#endif
 			}`
-	} );
+	});
 
 	fullscreenQuadMaterial.uniforms.blitTexture.value = texture;
 	fullscreenQuadMaterial.defines.IS_SRGB = texture.colorSpace == SRGBColorSpace;
 	fullscreenQuadMaterial.needsUpdate = true;
 
-	if ( ! fullscreenQuad ) {
+	if (!fullscreenQuad) {
 
-		fullscreenQuad = new Mesh( fullscreenQuadGeometry, fullscreenQuadMaterial );
+		fullscreenQuad = new Mesh(fullscreenQuadGeometry, fullscreenQuadMaterial);
 		fullscreenQuad.frustrumCulled = false;
 
 	}
 
 	const _camera = new PerspectiveCamera();
 	const _scene = new Scene();
-	_scene.add( fullscreenQuad );
+	_scene.add(fullscreenQuad);
 
-	if ( renderer === null ) {
+	if (renderer === null) {
 
-		renderer = _renderer = new WebGLRenderer( { antialias: false } );
+		renderer = _renderer = new WebGLRenderer({ antialias: false });
 
 	}
 
-	const width = Math.min( texture.image.width, maxTextureSize );
-	const height = Math.min( texture.image.height, maxTextureSize );
+	const width = Math.min(texture.image.width, maxTextureSize);
+	const height = Math.min(texture.image.height, maxTextureSize);
 
-	renderer.setSize( width, height );
+	renderer.setSize(width, height);
 	renderer.clear();
-	renderer.render( _scene, _camera );
+	renderer.render(_scene, _camera);
 
-	const canvas = document.createElement( 'canvas' );
-	const context = canvas.getContext( '2d' );
+	const canvas = document.createElement('canvas');
+	const context = canvas.getContext('2d');
 
 	canvas.width = width;
 	canvas.height = height;
 
-	context.drawImage( renderer.domElement, 0, 0, width, height );
+	context.drawImage(renderer.domElement, 0, 0, width, height);
 
-	const readableTexture = new CanvasTexture( canvas );
+	const readableTexture = new CanvasTexture(canvas);
 
 	readableTexture.minFilter = texture.minFilter;
 	readableTexture.magFilter = texture.magFilter;
@@ -85,7 +85,7 @@ export function decompress( texture, maxTextureSize = Infinity, renderer = null 
 	readableTexture.wrapT = texture.wrapT;
 	readableTexture.name = texture.name;
 
-	if ( _renderer ) {
+	if (_renderer) {
 
 		_renderer.forceContextLoss();
 		_renderer.dispose();

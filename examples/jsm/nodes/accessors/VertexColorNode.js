@@ -1,13 +1,13 @@
 import { addNodeClass } from '../core/Node.js';
 import AttributeNode from '../core/AttributeNode.js';
 import { nodeObject } from '../shadernode/ShaderNode.js';
-import { Vector4 } from 'three';
+import { Vector4 } from '@semiconscious/three';
 
 class VertexColorNode extends AttributeNode {
 
-	constructor( index = 0 ) {
+	constructor(index = 0) {
 
-		super( null, 'vec4' );
+		super(null, 'vec4');
 
 		this.isVertexColorNode = true;
 
@@ -15,29 +15,29 @@ class VertexColorNode extends AttributeNode {
 
 	}
 
-	getAttributeName( /*builder*/ ) {
+	getAttributeName( /*builder*/) {
 
 		const index = this.index;
 
-		return 'color' + ( index > 0 ? index : '' );
+		return 'color' + (index > 0 ? index : '');
 
 	}
 
-	generate( builder ) {
+	generate(builder) {
 
-		const attributeName = this.getAttributeName( builder );
-		const geometryAttribute = builder.hasGeometryAttribute( attributeName );
+		const attributeName = this.getAttributeName(builder);
+		const geometryAttribute = builder.hasGeometryAttribute(attributeName);
 
 		let result;
 
-		if ( geometryAttribute === true ) {
+		if (geometryAttribute === true) {
 
-			result = super.generate( builder );
+			result = super.generate(builder);
 
 		} else {
 
 			// Vertex color fallback should be white
-			result = builder.generateConst( this.nodeType, new Vector4( 1, 1, 1, 1 ) );
+			result = builder.generateConst(this.nodeType, new Vector4(1, 1, 1, 1));
 
 		}
 
@@ -45,17 +45,17 @@ class VertexColorNode extends AttributeNode {
 
 	}
 
-	serialize( data ) {
+	serialize(data) {
 
-		super.serialize( data );
+		super.serialize(data);
 
 		data.index = this.index;
 
 	}
 
-	deserialize( data ) {
+	deserialize(data) {
 
-		super.deserialize( data );
+		super.deserialize(data);
 
 		this.index = data.index;
 
@@ -65,6 +65,6 @@ class VertexColorNode extends AttributeNode {
 
 export default VertexColorNode;
 
-export const vertexColor = ( ...params ) => nodeObject( new VertexColorNode( ...params ) );
+export const vertexColor = (...params) => nodeObject(new VertexColorNode(...params));
 
-addNodeClass( 'VertexColorNode', VertexColorNode );
+addNodeClass('VertexColorNode', VertexColorNode);

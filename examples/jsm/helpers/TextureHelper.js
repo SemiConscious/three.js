@@ -6,14 +6,14 @@ import {
 	PlaneGeometry,
 	ShaderMaterial,
 	Vector3,
-} from 'three';
+} from '@semiconscious/three';
 import { mergeGeometries } from '../utils/BufferGeometryUtils.js';
 
 class TextureHelper extends Mesh {
 
-	constructor( texture, width = 1, height = 1, depth = 1 ) {
+	constructor(texture, width = 1, height = 1, depth = 1) {
 
-		const material = new ShaderMaterial( {
+		const material = new ShaderMaterial({
 
 			type: 'TextureHelperMaterial',
 
@@ -23,7 +23,7 @@ class TextureHelper extends Mesh {
 			uniforms: {
 
 				map: { value: texture },
-				alpha: { value: getAlpha( texture ) },
+				alpha: { value: getAlpha(texture) },
 
 			},
 
@@ -41,7 +41,7 @@ class TextureHelper extends Mesh {
 
 				'}',
 
-			].join( '\n' ),
+			].join('\n'),
 
 			fragmentShader: [
 
@@ -71,15 +71,15 @@ class TextureHelper extends Mesh {
 
 				'}'
 
-			].join( '\n' ).replace( '{samplerType}', getSamplerType( texture ) )
+			].join('\n').replace('{samplerType}', getSamplerType(texture))
 
-		} );
+		});
 
 		const geometry = texture.isCubeTexture
-			? createCubeGeometry( width, height, depth )
-			: createSliceGeometry( texture, width, height, depth );
+			? createCubeGeometry(width, height, depth)
+			: createSliceGeometry(texture, width, height, depth);
 
-		super( geometry, material );
+		super(geometry, material);
 
 		this.texture = texture;
 		this.type = 'TextureHelper';
@@ -95,17 +95,17 @@ class TextureHelper extends Mesh {
 
 }
 
-function getSamplerType( texture ) {
+function getSamplerType(texture) {
 
-	if ( texture.isCubeTexture ) {
+	if (texture.isCubeTexture) {
 
 		return 'samplerCube';
 
-	} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+	} else if (texture.isDataArrayTexture || texture.isCompressedArrayTexture) {
 
 		return 'sampler2DArray';
 
-	} else if ( texture.isData3DTexture || texture.isCompressed3DTexture ) {
+	} else if (texture.isData3DTexture || texture.isCompressed3DTexture) {
 
 		return 'sampler3D';
 
@@ -117,17 +117,17 @@ function getSamplerType( texture ) {
 
 }
 
-function getImageCount( texture ) {
+function getImageCount(texture) {
 
-	if ( texture.isCubeTexture ) {
+	if (texture.isCubeTexture) {
 
 		return 6;
 
-	} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+	} else if (texture.isDataArrayTexture || texture.isCompressedArrayTexture) {
 
 		return texture.image.depth;
 
-	} else if ( texture.isData3DTexture || texture.isCompressed3DTexture ) {
+	} else if (texture.isData3DTexture || texture.isCompressed3DTexture) {
 
 		return texture.image.depth;
 
@@ -139,19 +139,19 @@ function getImageCount( texture ) {
 
 }
 
-function getAlpha( texture ) {
+function getAlpha(texture) {
 
-	if ( texture.isCubeTexture ) {
+	if (texture.isCubeTexture) {
 
 		return 1;
 
-	} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+	} else if (texture.isDataArrayTexture || texture.isCompressedArrayTexture) {
 
-		return Math.max( 1 / texture.image.depth, 0.25 );
+		return Math.max(1 / texture.image.depth, 0.25);
 
-	} else if ( texture.isData3DTexture || texture.isCompressed3DTexture ) {
+	} else if (texture.isData3DTexture || texture.isCompressed3DTexture) {
 
-		return Math.max( 1 / texture.image.depth, 0.25 );
+		return Math.max(1 / texture.image.depth, 0.25);
 
 	} else {
 
@@ -161,76 +161,76 @@ function getAlpha( texture ) {
 
 }
 
-function createCubeGeometry( width, height, depth ) {
+function createCubeGeometry(width, height, depth) {
 
-	const geometry = new BoxGeometry( width, height, depth );
+	const geometry = new BoxGeometry(width, height, depth);
 
 	const position = geometry.attributes.position;
 	const uv = geometry.attributes.uv;
-	const uvw = new BufferAttribute( new Float32Array( uv.count * 3 ), 3 );
+	const uvw = new BufferAttribute(new Float32Array(uv.count * 3), 3);
 
 	const _direction = new Vector3();
 
-	for ( let j = 0, jl = uv.count; j < jl; ++ j ) {
+	for (let j = 0, jl = uv.count; j < jl; ++j) {
 
-		_direction.fromBufferAttribute( position, j ).normalize();
+		_direction.fromBufferAttribute(position, j).normalize();
 
 		const u = _direction.x;
 		const v = _direction.y;
 		const w = _direction.z;
 
-		uvw.setXYZ( j, u, v, w );
+		uvw.setXYZ(j, u, v, w);
 
 	}
 
-	geometry.deleteAttribute( 'uv' );
-	geometry.setAttribute( 'uvw', uvw );
+	geometry.deleteAttribute('uv');
+	geometry.setAttribute('uvw', uvw);
 
 	return geometry;
 
 }
 
-function createSliceGeometry( texture, width, height, depth ) {
+function createSliceGeometry(texture, width, height, depth) {
 
-	const sliceCount = getImageCount( texture );
+	const sliceCount = getImageCount(texture);
 
 	const geometries = [];
 
-	for ( let i = 0; i < sliceCount; ++ i ) {
+	for (let i = 0; i < sliceCount; ++i) {
 
-		const geometry = new PlaneGeometry( width, height );
+		const geometry = new PlaneGeometry(width, height);
 
-		if ( sliceCount > 1 ) {
+		if (sliceCount > 1) {
 
-			geometry.translate( 0, 0, depth * ( i / ( sliceCount - 1 ) - 0.5 ) );
+			geometry.translate(0, 0, depth * (i / (sliceCount - 1) - 0.5));
 
 		}
 
 		const uv = geometry.attributes.uv;
-		const uvw = new BufferAttribute( new Float32Array( uv.count * 3 ), 3 );
+		const uvw = new BufferAttribute(new Float32Array(uv.count * 3), 3);
 
-		for ( let j = 0, jl = uv.count; j < jl; ++ j ) {
+		for (let j = 0, jl = uv.count; j < jl; ++j) {
 
-			const u = uv.getX( j );
-			const v = texture.flipY ? uv.getY( j ) : 1 - uv.getY( j );
+			const u = uv.getX(j);
+			const v = texture.flipY ? uv.getY(j) : 1 - uv.getY(j);
 			const w = sliceCount === 1
 				? 1
 				: texture.isDataArrayTexture || texture.isCompressedArrayTexture
 					? i
-					: i / ( sliceCount - 1 );
+					: i / (sliceCount - 1);
 
-			uvw.setXYZ( j, u, v, w );
+			uvw.setXYZ(j, u, v, w);
 
 		}
 
-		geometry.deleteAttribute( 'uv' );
-		geometry.setAttribute( 'uvw', uvw );
+		geometry.deleteAttribute('uv');
+		geometry.setAttribute('uvw', uvw);
 
-		geometries.push( geometry );
+		geometries.push(geometry);
 
 	}
 
-	return mergeGeometries( geometries );
+	return mergeGeometries(geometries);
 
 }
 

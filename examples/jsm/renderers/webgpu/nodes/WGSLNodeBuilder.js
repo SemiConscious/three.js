@@ -1,4 +1,4 @@
-import { NoColorSpace, FloatType } from 'three';
+import { NoColorSpace, FloatType } from '@semiconscious/three';
 
 import NodeUniformsGroup from '../../common/nodes/NodeUniformsGroup.js';
 
@@ -88,36 +88,36 @@ const wgslMethods = {
 };
 
 const wgslPolyfill = {
-	threejs_xor: new CodeNode( `
+	threejs_xor: new CodeNode(`
 fn threejs_xor( a : bool, b : bool ) -> bool {
 
 	return ( a || b ) && !( a && b );
 
 }
 ` ),
-	lessThanEqual: new CodeNode( `
+	lessThanEqual: new CodeNode(`
 fn threejs_lessThanEqual( a : vec3<f32>, b : vec3<f32> ) -> vec3<bool> {
 
 	return vec3<bool>( a.x <= b.x, a.y <= b.y, a.z <= b.z );
 
 }
 ` ),
-	greaterThan: new CodeNode( `
+	greaterThan: new CodeNode(`
 fn threejs_greaterThan( a : vec3<f32>, b : vec3<f32> ) -> vec3<bool> {
 
 	return vec3<bool>( a.x > b.x, a.y > b.y, a.z > b.z );
 
 }
 ` ),
-	mod_float: new CodeNode( 'fn threejs_mod_float( x : f32, y : f32 ) -> f32 { return x - y * floor( x / y ); }' ),
-	mod_vec2: new CodeNode( 'fn threejs_mod_vec2( x : vec2f, y : vec2f ) -> vec2f { return x - y * floor( x / y ); }' ),
-	mod_vec3: new CodeNode( 'fn threejs_mod_vec3( x : vec3f, y : vec3f ) -> vec3f { return x - y * floor( x / y ); }' ),
-	mod_vec4: new CodeNode( 'fn threejs_mod_vec4( x : vec4f, y : vec4f ) -> vec4f { return x - y * floor( x / y ); }' ),
-	equals_bool: new CodeNode( 'fn threejs_equals_bool( a : bool, b : bool ) -> bool { return a == b; }' ),
-	equals_bvec2: new CodeNode( 'fn threejs_equals_bvec2( a : vec2f, b : vec2f ) -> vec2<bool> { return vec2<bool>( a.x == b.x, a.y == b.y ); }' ),
-	equals_bvec3: new CodeNode( 'fn threejs_equals_bvec3( a : vec3f, b : vec3f ) -> vec3<bool> { return vec3<bool>( a.x == b.x, a.y == b.y, a.z == b.z ); }' ),
-	equals_bvec4: new CodeNode( 'fn threejs_equals_bvec4( a : vec4f, b : vec4f ) -> vec4<bool> { return vec4<bool>( a.x == b.x, a.y == b.y, a.z == b.z, a.w == b.w ); }' ),
-	repeatWrapping: new CodeNode( `
+	mod_float: new CodeNode('fn threejs_mod_float( x : f32, y : f32 ) -> f32 { return x - y * floor( x / y ); }'),
+	mod_vec2: new CodeNode('fn threejs_mod_vec2( x : vec2f, y : vec2f ) -> vec2f { return x - y * floor( x / y ); }'),
+	mod_vec3: new CodeNode('fn threejs_mod_vec3( x : vec3f, y : vec3f ) -> vec3f { return x - y * floor( x / y ); }'),
+	mod_vec4: new CodeNode('fn threejs_mod_vec4( x : vec4f, y : vec4f ) -> vec4f { return x - y * floor( x / y ); }'),
+	equals_bool: new CodeNode('fn threejs_equals_bool( a : bool, b : bool ) -> bool { return a == b; }'),
+	equals_bvec2: new CodeNode('fn threejs_equals_bvec2( a : vec2f, b : vec2f ) -> vec2<bool> { return vec2<bool>( a.x == b.x, a.y == b.y ); }'),
+	equals_bvec3: new CodeNode('fn threejs_equals_bvec3( a : vec3f, b : vec3f ) -> vec3<bool> { return vec3<bool>( a.x == b.x, a.y == b.y, a.z == b.z ); }'),
+	equals_bvec4: new CodeNode('fn threejs_equals_bvec4( a : vec4f, b : vec4f ) -> vec4<bool> { return vec4<bool>( a.x == b.x, a.y == b.y, a.z == b.z, a.w == b.w ); }'),
+	repeatWrapping: new CodeNode(`
 fn threejs_repeatWrapping( uv : vec2<f32>, dimension : vec2<u32> ) -> vec2<u32> {
 
 	let uvScaled = vec2<u32>( uv * vec2<f32>( dimension ) );
@@ -130,9 +130,9 @@ fn threejs_repeatWrapping( uv : vec2<f32>, dimension : vec2<u32> ) -> vec2<u32> 
 
 class WGSLNodeBuilder extends NodeBuilder {
 
-	constructor( object, renderer, scene = null ) {
+	constructor(object, renderer, scene = null) {
 
-		super( object, renderer, new WGSLNodeParser(), scene );
+		super(object, renderer, new WGSLNodeParser(), scene);
 
 		this.uniformGroups = {};
 
@@ -140,113 +140,113 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	needsColorSpaceToLinear( texture ) {
+	needsColorSpaceToLinear(texture) {
 
 		return texture.isVideoTexture === true && texture.colorSpace !== NoColorSpace;
 
 	}
 
-	_generateTextureSample( texture, textureProperty, uvSnippet, depthSnippet, shaderStage = this.shaderStage ) {
+	_generateTextureSample(texture, textureProperty, uvSnippet, depthSnippet, shaderStage = this.shaderStage) {
 
-		if ( shaderStage === 'fragment' ) {
+		if (shaderStage === 'fragment') {
 
-			if ( depthSnippet ) {
+			if (depthSnippet) {
 
-				return `textureSample( ${ textureProperty }, ${ textureProperty }_sampler, ${ uvSnippet }, ${ depthSnippet } )`;
+				return `textureSample( ${textureProperty}, ${textureProperty}_sampler, ${uvSnippet}, ${depthSnippet} )`;
 
 			} else {
 
-				return `textureSample( ${ textureProperty }, ${ textureProperty }_sampler, ${ uvSnippet } )`;
+				return `textureSample( ${textureProperty}, ${textureProperty}_sampler, ${uvSnippet} )`;
 
 			}
 
 		} else {
 
-			return this.generateTextureLod( texture, textureProperty, uvSnippet );
+			return this.generateTextureLod(texture, textureProperty, uvSnippet);
 
 		}
 
 	}
 
-	_generateVideoSample( textureProperty, uvSnippet, shaderStage = this.shaderStage ) {
+	_generateVideoSample(textureProperty, uvSnippet, shaderStage = this.shaderStage) {
 
-		if ( shaderStage === 'fragment' ) {
+		if (shaderStage === 'fragment') {
 
-			return `textureSampleBaseClampToEdge( ${ textureProperty }, ${ textureProperty }_sampler, vec2<f32>( ${ uvSnippet }.x, 1.0 - ${ uvSnippet }.y ) )`;
+			return `textureSampleBaseClampToEdge( ${textureProperty}, ${textureProperty}_sampler, vec2<f32>( ${uvSnippet}.x, 1.0 - ${uvSnippet}.y ) )`;
 
 		} else {
 
-			console.error( `WebGPURenderer: THREE.VideoTexture does not support ${ shaderStage } shader.` );
+			console.error(`WebGPURenderer: THREE.VideoTexture does not support ${shaderStage} shader.`);
 
 		}
 
 	}
 
-	_generateTextureSampleLevel( texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage = this.shaderStage ) {
+	_generateTextureSampleLevel(texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage = this.shaderStage) {
 
-		if ( shaderStage === 'fragment' && this.isUnfilterable( texture ) === false ) {
+		if (shaderStage === 'fragment' && this.isUnfilterable(texture) === false) {
 
-			return `textureSampleLevel( ${ textureProperty }, ${ textureProperty }_sampler, ${ uvSnippet }, ${ levelSnippet } )`;
+			return `textureSampleLevel( ${textureProperty}, ${textureProperty}_sampler, ${uvSnippet}, ${levelSnippet} )`;
 
 		} else {
 
-			return this.generateTextureLod( texture, textureProperty, uvSnippet, levelSnippet );
+			return this.generateTextureLod(texture, textureProperty, uvSnippet, levelSnippet);
 
 		}
 
 	}
 
-	generateTextureLod( texture, textureProperty, uvSnippet, levelSnippet = '0' ) {
+	generateTextureLod(texture, textureProperty, uvSnippet, levelSnippet = '0') {
 
-		this._include( 'repeatWrapping' );
+		this._include('repeatWrapping');
 
-		const dimension = `textureDimensions( ${ textureProperty }, 0 )`;
+		const dimension = `textureDimensions( ${textureProperty}, 0 )`;
 
-		return `textureLoad( ${ textureProperty }, threejs_repeatWrapping( ${ uvSnippet }, ${ dimension } ), i32( ${ levelSnippet } ) )`;
+		return `textureLoad( ${textureProperty}, threejs_repeatWrapping( ${uvSnippet}, ${dimension} ), i32( ${levelSnippet} ) )`;
 
 	}
 
-	generateTextureLoad( texture, textureProperty, uvIndexSnippet, depthSnippet, levelSnippet = '0u' ) {
+	generateTextureLoad(texture, textureProperty, uvIndexSnippet, depthSnippet, levelSnippet = '0u') {
 
-		if ( depthSnippet ) {
+		if (depthSnippet) {
 
-			return `textureLoad( ${ textureProperty }, ${ uvIndexSnippet }, ${ depthSnippet }, ${ levelSnippet } )`;
+			return `textureLoad( ${textureProperty}, ${uvIndexSnippet}, ${depthSnippet}, ${levelSnippet} )`;
 
 		} else {
 
-			return `textureLoad( ${ textureProperty }, ${ uvIndexSnippet }, ${ levelSnippet } )`;
+			return `textureLoad( ${textureProperty}, ${uvIndexSnippet}, ${levelSnippet} )`;
 
 		}
 
 	}
 
-	generateTextureStore( texture, textureProperty, uvIndexSnippet, valueSnippet ) {
+	generateTextureStore(texture, textureProperty, uvIndexSnippet, valueSnippet) {
 
-		return `textureStore( ${ textureProperty }, ${ uvIndexSnippet }, ${ valueSnippet } )`;
+		return `textureStore( ${textureProperty}, ${uvIndexSnippet}, ${valueSnippet} )`;
 
 	}
 
-	isUnfilterable( texture ) {
+	isUnfilterable(texture) {
 
 		return texture.isDataTexture === true && texture.type === FloatType;
 
 	}
 
-	generateTexture( texture, textureProperty, uvSnippet, depthSnippet, shaderStage = this.shaderStage ) {
+	generateTexture(texture, textureProperty, uvSnippet, depthSnippet, shaderStage = this.shaderStage) {
 
 		let snippet = null;
 
-		if ( texture.isVideoTexture === true ) {
+		if (texture.isVideoTexture === true) {
 
-			snippet = this._generateVideoSample( textureProperty, uvSnippet, shaderStage );
+			snippet = this._generateVideoSample(textureProperty, uvSnippet, shaderStage);
 
-		} else if ( this.isUnfilterable( texture ) ) {
+		} else if (this.isUnfilterable(texture)) {
 
-			snippet = this.generateTextureLod( texture, textureProperty, uvSnippet, '0', depthSnippet, shaderStage );
+			snippet = this.generateTextureLod(texture, textureProperty, uvSnippet, '0', depthSnippet, shaderStage);
 
 		} else {
 
-			snippet = this._generateTextureSample( texture, textureProperty, uvSnippet, depthSnippet, shaderStage );
+			snippet = this._generateTextureSample(texture, textureProperty, uvSnippet, depthSnippet, shaderStage);
 
 		}
 
@@ -254,31 +254,31 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	generateTextureCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, shaderStage = this.shaderStage ) {
+	generateTextureCompare(texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, shaderStage = this.shaderStage) {
 
-		if ( shaderStage === 'fragment' ) {
+		if (shaderStage === 'fragment') {
 
-			return `textureSampleCompare( ${ textureProperty }, ${ textureProperty }_sampler, ${ uvSnippet }, ${ compareSnippet } )`;
+			return `textureSampleCompare( ${textureProperty}, ${textureProperty}_sampler, ${uvSnippet}, ${compareSnippet} )`;
 
 		} else {
 
-			console.error( `WebGPURenderer: THREE.DepthTexture.compareFunction() does not support ${ shaderStage } shader.` );
+			console.error(`WebGPURenderer: THREE.DepthTexture.compareFunction() does not support ${shaderStage} shader.`);
 
 		}
 
 	}
 
-	generateTextureLevel( texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage = this.shaderStage ) {
+	generateTextureLevel(texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage = this.shaderStage) {
 
 		let snippet = null;
 
-		if ( texture.isVideoTexture === true ) {
+		if (texture.isVideoTexture === true) {
 
-			snippet = this._generateVideoSample( textureProperty, uvSnippet, shaderStage );
+			snippet = this._generateVideoSample(textureProperty, uvSnippet, shaderStage);
 
 		} else {
 
-			snippet = this._generateTextureSampleLevel( texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage );
+			snippet = this._generateTextureSampleLevel(texture, textureProperty, uvSnippet, levelSnippet, depthSnippet, shaderStage);
 
 		}
 
@@ -286,28 +286,28 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	getPropertyName( node, shaderStage = this.shaderStage ) {
+	getPropertyName(node, shaderStage = this.shaderStage) {
 
-		if ( node.isNodeVarying === true && node.needsInterpolation === true ) {
+		if (node.isNodeVarying === true && node.needsInterpolation === true) {
 
-			if ( shaderStage === 'vertex' ) {
+			if (shaderStage === 'vertex') {
 
-				return `varyings.${ node.name }`;
+				return `varyings.${node.name}`;
 
 			}
 
-		} else if ( node.isNodeUniform === true ) {
+		} else if (node.isNodeUniform === true) {
 
 			const name = node.name;
 			const type = node.type;
 
-			if ( type === 'texture' || type === 'cubeTexture' || type === 'storageTexture' ) {
+			if (type === 'texture' || type === 'cubeTexture' || type === 'storageTexture') {
 
 				return name;
 
-			} else if ( type === 'buffer' || type === 'storageBuffer' ) {
+			} else if (type === 'buffer' || type === 'storageBuffer') {
 
-				return `NodeBuffer_${ node.id }.${name}`;
+				return `NodeBuffer_${node.id}.${name}`;
 
 			} else {
 
@@ -317,23 +317,23 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 		}
 
-		return super.getPropertyName( node );
+		return super.getPropertyName(node);
 
 	}
 
-	_getUniformGroupCount( shaderStage ) {
+	_getUniformGroupCount(shaderStage) {
 
-		return Object.keys( this.uniforms[ shaderStage ] ).length;
+		return Object.keys(this.uniforms[shaderStage]).length;
 
 	}
 
-	getFunctionOperator( op ) {
+	getFunctionOperator(op) {
 
-		const fnOp = wgslFnOpLib[ op ];
+		const fnOp = wgslFnOpLib[op];
 
-		if ( fnOp !== undefined ) {
+		if (fnOp !== undefined) {
 
-			this._include( fnOp );
+			this._include(fnOp);
 
 			return fnOp;
 
@@ -343,58 +343,58 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	getUniformFromNode( node, type, shaderStage, name = null ) {
+	getUniformFromNode(node, type, shaderStage, name = null) {
 
-		const uniformNode = super.getUniformFromNode( node, type, shaderStage, name );
-		const nodeData = this.getDataFromNode( node, shaderStage, this.globalCache );
+		const uniformNode = super.getUniformFromNode(node, type, shaderStage, name);
+		const nodeData = this.getDataFromNode(node, shaderStage, this.globalCache);
 
-		if ( nodeData.uniformGPU === undefined ) {
+		if (nodeData.uniformGPU === undefined) {
 
 			let uniformGPU;
 
-			const bindings = this.bindings[ shaderStage ];
+			const bindings = this.bindings[shaderStage];
 
-			if ( type === 'texture' || type === 'cubeTexture' || type === 'storageTexture' ) {
+			if (type === 'texture' || type === 'cubeTexture' || type === 'storageTexture') {
 
 				let texture = null;
 
-				if ( type === 'texture' || type === 'storageTexture' ) {
+				if (type === 'texture' || type === 'storageTexture') {
 
-					texture = new NodeSampledTexture( uniformNode.name, uniformNode.node );
+					texture = new NodeSampledTexture(uniformNode.name, uniformNode.node);
 
-				} else if ( type === 'cubeTexture' ) {
+				} else if (type === 'cubeTexture') {
 
-					texture = new NodeSampledCubeTexture( uniformNode.name, uniformNode.node );
+					texture = new NodeSampledCubeTexture(uniformNode.name, uniformNode.node);
 
 				}
 
 				texture.store = node.isStoreTextureNode === true;
-				texture.setVisibility( gpuShaderStageLib[ shaderStage ] );
+				texture.setVisibility(gpuShaderStageLib[shaderStage]);
 
-				if ( shaderStage === 'fragment' && this.isUnfilterable( node.value ) === false && texture.store === false ) {
+				if (shaderStage === 'fragment' && this.isUnfilterable(node.value) === false && texture.store === false) {
 
-					const sampler = new NodeSampler( `${uniformNode.name}_sampler`, uniformNode.node );
-					sampler.setVisibility( gpuShaderStageLib[ shaderStage ] );
+					const sampler = new NodeSampler(`${uniformNode.name}_sampler`, uniformNode.node);
+					sampler.setVisibility(gpuShaderStageLib[shaderStage]);
 
-					bindings.push( sampler, texture );
+					bindings.push(sampler, texture);
 
-					uniformGPU = [ sampler, texture ];
+					uniformGPU = [sampler, texture];
 
 				} else {
 
-					bindings.push( texture );
+					bindings.push(texture);
 
-					uniformGPU = [ texture ];
+					uniformGPU = [texture];
 
 				}
 
-			} else if ( type === 'buffer' || type === 'storageBuffer' ) {
+			} else if (type === 'buffer' || type === 'storageBuffer') {
 
 				const bufferClass = type === 'storageBuffer' ? NodeStorageBuffer : NodeUniformBuffer;
-				const buffer = new bufferClass( node );
-				buffer.setVisibility( gpuShaderStageLib[ shaderStage ] );
+				const buffer = new bufferClass(node);
+				buffer.setVisibility(gpuShaderStageLib[shaderStage]);
 
-				bindings.push( buffer );
+				bindings.push(buffer);
 
 				uniformGPU = buffer;
 
@@ -403,32 +403,32 @@ class WGSLNodeBuilder extends NodeBuilder {
 				const group = node.groupNode;
 				const groupName = group.name;
 
-				const uniformsStage = this.uniformGroups[ shaderStage ] || ( this.uniformGroups[ shaderStage ] = {} );
+				const uniformsStage = this.uniformGroups[shaderStage] || (this.uniformGroups[shaderStage] = {});
 
-				let uniformsGroup = uniformsStage[ groupName ];
+				let uniformsGroup = uniformsStage[groupName];
 
-				if ( uniformsGroup === undefined ) {
+				if (uniformsGroup === undefined) {
 
-					uniformsGroup = new NodeUniformsGroup( groupName, group );
-					uniformsGroup.setVisibility( gpuShaderStageLib[ shaderStage ] );
+					uniformsGroup = new NodeUniformsGroup(groupName, group);
+					uniformsGroup.setVisibility(gpuShaderStageLib[shaderStage]);
 
-					uniformsStage[ groupName ] = uniformsGroup;
+					uniformsStage[groupName] = uniformsGroup;
 
-					bindings.push( uniformsGroup );
+					bindings.push(uniformsGroup);
 
 				}
 
-				uniformGPU = this.getNodeUniform( uniformNode, type );
+				uniformGPU = this.getNodeUniform(uniformNode, type);
 
-				uniformsGroup.addUniform( uniformGPU );
+				uniformsGroup.addUniform(uniformGPU);
 
 			}
 
 			nodeData.uniformGPU = uniformGPU;
 
-			if ( shaderStage === 'vertex' ) {
+			if (shaderStage === 'vertex') {
 
-				this.bindingsOffset[ 'fragment' ] = bindings.length;
+				this.bindingsOffset['fragment'] = bindings.length;
 
 			}
 
@@ -438,23 +438,23 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	isReference( type ) {
+	isReference(type) {
 
-		return super.isReference( type ) || type === 'texture_2d' || type === 'texture_cube' || type === 'texture_depth_2d' || type === 'texture_storage_2d';
+		return super.isReference(type) || type === 'texture_2d' || type === 'texture_cube' || type === 'texture_depth_2d' || type === 'texture_storage_2d';
 
 	}
 
-	getBuiltin( name, property, type, shaderStage = this.shaderStage ) {
+	getBuiltin(name, property, type, shaderStage = this.shaderStage) {
 
-		const map = this.builtins[ shaderStage ] || ( this.builtins[ shaderStage ] = new Map() );
+		const map = this.builtins[shaderStage] || (this.builtins[shaderStage] = new Map());
 
-		if ( map.has( name ) === false ) {
+		if (map.has(name) === false) {
 
-			map.set( name, {
+			map.set(name, {
 				name,
 				property,
 				type
-			} );
+			});
 
 		}
 
@@ -464,9 +464,9 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	getVertexIndex() {
 
-		if ( this.shaderStage === 'vertex' ) {
+		if (this.shaderStage === 'vertex') {
 
-			return this.getBuiltin( 'vertex_index', 'vertexIndex', 'u32', 'attribute' );
+			return this.getBuiltin('vertex_index', 'vertexIndex', 'u32', 'attribute');
 
 		}
 
@@ -474,25 +474,25 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 	}
 
-	buildFunctionCode( shaderNode ) {
+	buildFunctionCode(shaderNode) {
 
 		const layout = shaderNode.layout;
-		const flowData = this.flowShaderNode( shaderNode );
+		const flowData = this.flowShaderNode(shaderNode);
 
 		const parameters = [];
 
-		for ( const input of layout.inputs ) {
+		for (const input of layout.inputs) {
 
-			parameters.push( input.name + ' : ' + this.getType( input.type ) );
+			parameters.push(input.name + ' : ' + this.getType(input.type));
 
 		}
 
 		//
 
-		const code = `fn ${ layout.name }( ${ parameters.join( ', ' ) } ) -> ${ this.getType( layout.type ) } {
-${ flowData.vars }
-${ flowData.code }
-	return ${ flowData.result };
+		const code = `fn ${layout.name}( ${parameters.join(', ')} ) -> ${this.getType(layout.type)} {
+${flowData.vars}
+${flowData.code}
+	return ${flowData.result};
 
 }`;
 
@@ -504,9 +504,9 @@ ${ flowData.code }
 
 	getInstanceIndex() {
 
-		if ( this.shaderStage === 'vertex' ) {
+		if (this.shaderStage === 'vertex') {
 
-			return this.getBuiltin( 'instance_index', 'instanceIndex', 'u32', 'attribute' );
+			return this.getBuiltin('instance_index', 'instanceIndex', 'u32', 'attribute');
 
 		}
 
@@ -516,19 +516,19 @@ ${ flowData.code }
 
 	getFrontFacing() {
 
-		return this.getBuiltin( 'front_facing', 'isFront', 'bool' );
+		return this.getBuiltin('front_facing', 'isFront', 'bool');
 
 	}
 
 	getFragCoord() {
 
-		return this.getBuiltin( 'position', 'fragCoord', 'vec4<f32>' ) + '.xy';
+		return this.getBuiltin('position', 'fragCoord', 'vec4<f32>') + '.xy';
 
 	}
 
 	getFragDepth() {
 
-		return 'output.' + this.getBuiltin( 'frag_depth', 'depth', 'f32', 'output' );
+		return 'output.' + this.getBuiltin('frag_depth', 'depth', 'f32', 'output');
 
 	}
 
@@ -538,157 +538,157 @@ ${ flowData.code }
 
 	}
 
-	getBuiltins( shaderStage ) {
+	getBuiltins(shaderStage) {
 
 		const snippets = [];
-		const builtins = this.builtins[ shaderStage ];
+		const builtins = this.builtins[shaderStage];
 
-		if ( builtins !== undefined ) {
+		if (builtins !== undefined) {
 
-			for ( const { name, property, type } of builtins.values() ) {
+			for (const { name, property, type } of builtins.values()) {
 
-				snippets.push( `@builtin( ${name} ) ${property} : ${type}` );
+				snippets.push(`@builtin( ${name} ) ${property} : ${type}`);
 
 			}
 
 		}
 
-		return snippets.join( ',\n\t' );
+		return snippets.join(',\n\t');
 
 	}
 
-	getAttributes( shaderStage ) {
+	getAttributes(shaderStage) {
 
 		const snippets = [];
 
-		if ( shaderStage === 'compute' ) {
+		if (shaderStage === 'compute') {
 
-			this.getBuiltin( 'global_invocation_id', 'id', 'vec3<u32>', 'attribute' );
+			this.getBuiltin('global_invocation_id', 'id', 'vec3<u32>', 'attribute');
 
 		}
 
-		if ( shaderStage === 'vertex' || shaderStage === 'compute' ) {
+		if (shaderStage === 'vertex' || shaderStage === 'compute') {
 
-			const builtins = this.getBuiltins( 'attribute' );
+			const builtins = this.getBuiltins('attribute');
 
-			if ( builtins ) snippets.push( builtins );
+			if (builtins) snippets.push(builtins);
 
 			const attributes = this.getAttributesArray();
 
-			for ( let index = 0, length = attributes.length; index < length; index ++ ) {
+			for (let index = 0, length = attributes.length; index < length; index++) {
 
-				const attribute = attributes[ index ];
+				const attribute = attributes[index];
 				const name = attribute.name;
-				const type = this.getType( attribute.type );
+				const type = this.getType(attribute.type);
 
-				snippets.push( `@location( ${index} ) ${ name } : ${ type }` );
+				snippets.push(`@location( ${index} ) ${name} : ${type}`);
 
 			}
 
 		}
 
-		return snippets.join( ',\n\t' );
+		return snippets.join(',\n\t');
 
 	}
 
-	getStructMembers( struct ) {
+	getStructMembers(struct) {
 
 		const snippets = [];
 		const members = struct.getMemberTypes();
 
-		for ( let i = 0; i < members.length; i ++ ) {
+		for (let i = 0; i < members.length; i++) {
 
-			const member = members[ i ];
-			snippets.push( `\t@location( ${i} ) m${i} : ${ member }<f32>` );
+			const member = members[i];
+			snippets.push(`\t@location( ${i} ) m${i} : ${member}<f32>`);
 
 		}
 
-		return snippets.join( ',\n' );
+		return snippets.join(',\n');
 
 	}
 
-	getStructs( shaderStage ) {
+	getStructs(shaderStage) {
 
 		const snippets = [];
-		const structs = this.structs[ shaderStage ];
+		const structs = this.structs[shaderStage];
 
-		for ( let index = 0, length = structs.length; index < length; index ++ ) {
+		for (let index = 0, length = structs.length; index < length; index++) {
 
-			const struct = structs[ index ];
+			const struct = structs[index];
 			const name = struct.name;
 
-			let snippet = `\struct ${ name } {\n`;
-			snippet += this.getStructMembers( struct );
+			let snippet = `\struct ${name} {\n`;
+			snippet += this.getStructMembers(struct);
 			snippet += '\n}';
 
-			snippets.push( snippet );
+			snippets.push(snippet);
 
 		}
 
-		return snippets.join( '\n\n' );
+		return snippets.join('\n\n');
 
 	}
 
-	getVar( type, name ) {
+	getVar(type, name) {
 
-		return `var ${ name } : ${ this.getType( type ) }`;
+		return `var ${name} : ${this.getType(type)}`;
 
 	}
 
-	getVars( shaderStage ) {
+	getVars(shaderStage) {
 
 		const snippets = [];
-		const vars = this.vars[ shaderStage ];
+		const vars = this.vars[shaderStage];
 
-		if ( vars !== undefined ) {
+		if (vars !== undefined) {
 
-			for ( const variable of vars ) {
+			for (const variable of vars) {
 
-				snippets.push( `\t${ this.getVar( variable.type, variable.name ) };` );
+				snippets.push(`\t${this.getVar(variable.type, variable.name)};`);
 
 			}
 
 		}
 
-		return `\n${ snippets.join( '\n' ) }\n`;
+		return `\n${snippets.join('\n')}\n`;
 
 	}
 
-	getVaryings( shaderStage ) {
+	getVaryings(shaderStage) {
 
 		const snippets = [];
 
-		if ( shaderStage === 'vertex' ) {
+		if (shaderStage === 'vertex') {
 
-			this.getBuiltin( 'position', 'Vertex', 'vec4<f32>', 'vertex' );
+			this.getBuiltin('position', 'Vertex', 'vec4<f32>', 'vertex');
 
 		}
 
-		if ( shaderStage === 'vertex' || shaderStage === 'fragment' ) {
+		if (shaderStage === 'vertex' || shaderStage === 'fragment') {
 
 			const varyings = this.varyings;
-			const vars = this.vars[ shaderStage ];
+			const vars = this.vars[shaderStage];
 
-			for ( let index = 0; index < varyings.length; index ++ ) {
+			for (let index = 0; index < varyings.length; index++) {
 
-				const varying = varyings[ index ];
+				const varying = varyings[index];
 
-				if ( varying.needsInterpolation ) {
+				if (varying.needsInterpolation) {
 
 					let attributesSnippet = `@location( ${index} )`;
 
-					if ( /^(int|uint|ivec|uvec)/.test( varying.type ) ) {
+					if (/^(int|uint|ivec|uvec)/.test(varying.type)) {
 
 						attributesSnippet += ' @interpolate( flat )';
 
 
 					}
 
-					snippets.push( `${ attributesSnippet } ${ varying.name } : ${ this.getType( varying.type ) }` );
+					snippets.push(`${attributesSnippet} ${varying.name} : ${this.getType(varying.type)}`);
 
-				} else if ( shaderStage === 'vertex' && vars.includes( varying ) === false ) {
+				} else if (shaderStage === 'vertex' && vars.includes(varying) === false) {
 
-					vars.push( varying );
+					vars.push(varying);
 
 				}
 
@@ -696,42 +696,42 @@ ${ flowData.code }
 
 		}
 
-		const builtins = this.getBuiltins( shaderStage );
+		const builtins = this.getBuiltins(shaderStage);
 
-		if ( builtins ) snippets.push( builtins );
+		if (builtins) snippets.push(builtins);
 
-		const code = snippets.join( ',\n\t' );
+		const code = snippets.join(',\n\t');
 
-		return shaderStage === 'vertex' ? this._getWGSLStruct( 'VaryingsStruct', '\t' + code ) : code;
+		return shaderStage === 'vertex' ? this._getWGSLStruct('VaryingsStruct', '\t' + code) : code;
 
 	}
 
-	getUniforms( shaderStage ) {
+	getUniforms(shaderStage) {
 
-		const uniforms = this.uniforms[ shaderStage ];
+		const uniforms = this.uniforms[shaderStage];
 
 		const bindingSnippets = [];
 		const bufferSnippets = [];
 		const structSnippets = [];
 		const uniformGroups = {};
 
-		let index = this.bindingsOffset[ shaderStage ];
+		let index = this.bindingsOffset[shaderStage];
 
-		for ( const uniform of uniforms ) {
+		for (const uniform of uniforms) {
 
-			if ( uniform.type === 'texture' || uniform.type === 'cubeTexture' || uniform.type === 'storageTexture' ) {
+			if (uniform.type === 'texture' || uniform.type === 'cubeTexture' || uniform.type === 'storageTexture') {
 
 				const texture = uniform.node.value;
 
-				if ( shaderStage === 'fragment' && this.isUnfilterable( texture ) === false && uniform.node.isStoreTextureNode !== true ) {
+				if (shaderStage === 'fragment' && this.isUnfilterable(texture) === false && uniform.node.isStoreTextureNode !== true) {
 
-					if ( texture.isDepthTexture === true && texture.compareFunction !== null ) {
+					if (texture.isDepthTexture === true && texture.compareFunction !== null) {
 
-						bindingSnippets.push( `@binding( ${index ++} ) @group( 0 ) var ${uniform.name}_sampler : sampler_comparison;` );
+						bindingSnippets.push(`@binding( ${index++} ) @group( 0 ) var ${uniform.name}_sampler : sampler_comparison;`);
 
 					} else {
 
-						bindingSnippets.push( `@binding( ${index ++} ) @group( 0 ) var ${uniform.name}_sampler : sampler;` );
+						bindingSnippets.push(`@binding( ${index++} ) @group( 0 ) var ${uniform.name}_sampler : sampler;`);
 
 					}
 
@@ -739,25 +739,25 @@ ${ flowData.code }
 
 				let textureType;
 
-				if ( texture.isCubeTexture === true ) {
+				if (texture.isCubeTexture === true) {
 
 					textureType = 'texture_cube<f32>';
 
-				} else if ( texture.isDataArrayTexture === true ) {
+				} else if (texture.isDataArrayTexture === true) {
 
 					textureType = 'texture_2d_array<f32>';
 
-				} else if ( texture.isDepthTexture === true ) {
+				} else if (texture.isDepthTexture === true) {
 
 					textureType = 'texture_depth_2d';
 
-				} else if ( texture.isVideoTexture === true ) {
+				} else if (texture.isVideoTexture === true) {
 
 					textureType = 'texture_external';
 
-				} else if ( uniform.node.isStoreTextureNode === true ) {
+				} else if (uniform.node.isStoreTextureNode === true) {
 
-					const format = getFormat( texture );
+					const format = getFormat(texture);
 
 					textureType = 'texture_storage_2d<' + format + ', write>';
 
@@ -767,47 +767,47 @@ ${ flowData.code }
 
 				}
 
-				bindingSnippets.push( `@binding( ${index ++} ) @group( 0 ) var ${uniform.name} : ${textureType};` );
+				bindingSnippets.push(`@binding( ${index++} ) @group( 0 ) var ${uniform.name} : ${textureType};`);
 
-			} else if ( uniform.type === 'buffer' || uniform.type === 'storageBuffer' ) {
+			} else if (uniform.type === 'buffer' || uniform.type === 'storageBuffer') {
 
 				const bufferNode = uniform.node;
-				const bufferType = this.getType( bufferNode.bufferType );
+				const bufferType = this.getType(bufferNode.bufferType);
 				const bufferCount = bufferNode.bufferCount;
 
 				const bufferCountSnippet = bufferCount > 0 ? ', ' + bufferCount : '';
 				const bufferSnippet = `\t${uniform.name} : array< ${bufferType}${bufferCountSnippet} >\n`;
 				const bufferAccessMode = bufferNode.isStorageBufferNode ? 'storage,read_write' : 'uniform';
 
-				bufferSnippets.push( this._getWGSLStructBinding( 'NodeBuffer_' + bufferNode.id, bufferSnippet, bufferAccessMode, index ++ ) );
+				bufferSnippets.push(this._getWGSLStructBinding('NodeBuffer_' + bufferNode.id, bufferSnippet, bufferAccessMode, index++));
 
 			} else {
 
-				const vectorType = this.getType( this.getVectorType( uniform.type ) );
+				const vectorType = this.getType(this.getVectorType(uniform.type));
 				const groupName = uniform.groupNode.name;
 
-				const group = uniformGroups[ groupName ] || ( uniformGroups[ groupName ] = {
-					index: index ++,
+				const group = uniformGroups[groupName] || (uniformGroups[groupName] = {
+					index: index++,
 					snippets: []
-				} );
+				});
 
-				group.snippets.push( `\t${ uniform.name } : ${ vectorType }` );
+				group.snippets.push(`\t${uniform.name} : ${vectorType}`);
 
 			}
 
 		}
 
-		for ( const name in uniformGroups ) {
+		for (const name in uniformGroups) {
 
-			const group = uniformGroups[ name ];
+			const group = uniformGroups[name];
 
-			structSnippets.push( this._getWGSLStructBinding( name, group.snippets.join( ',\n' ), 'uniform', group.index ) );
+			structSnippets.push(this._getWGSLStructBinding(name, group.snippets.join(',\n'), 'uniform', group.index));
 
 		}
 
-		let code = bindingSnippets.join( '\n' );
-		code += bufferSnippets.join( '\n' );
-		code += structSnippets.join( '\n' );
+		let code = bindingSnippets.join('\n');
+		code += bufferSnippets.join('\n');
+		code += structSnippets.join('\n');
 
 		return code;
 
@@ -817,71 +817,71 @@ ${ flowData.code }
 
 		const shadersData = this.material !== null ? { fragment: {}, vertex: {} } : { compute: {} };
 
-		for ( const shaderStage in shadersData ) {
+		for (const shaderStage in shadersData) {
 
-			const stageData = shadersData[ shaderStage ];
-			stageData.uniforms = this.getUniforms( shaderStage );
-			stageData.attributes = this.getAttributes( shaderStage );
-			stageData.varyings = this.getVaryings( shaderStage );
-			stageData.structs = this.getStructs( shaderStage );
-			stageData.vars = this.getVars( shaderStage );
-			stageData.codes = this.getCodes( shaderStage );
+			const stageData = shadersData[shaderStage];
+			stageData.uniforms = this.getUniforms(shaderStage);
+			stageData.attributes = this.getAttributes(shaderStage);
+			stageData.varyings = this.getVaryings(shaderStage);
+			stageData.structs = this.getStructs(shaderStage);
+			stageData.vars = this.getVars(shaderStage);
+			stageData.codes = this.getCodes(shaderStage);
 
 			//
 
 			let flow = '// code\n\n';
-			flow += this.flowCode[ shaderStage ];
+			flow += this.flowCode[shaderStage];
 
-			const flowNodes = this.flowNodes[ shaderStage ];
-			const mainNode = flowNodes[ flowNodes.length - 1 ];
+			const flowNodes = this.flowNodes[shaderStage];
+			const mainNode = flowNodes[flowNodes.length - 1];
 
 			const outputNode = mainNode.outputNode;
-			const isOutputStruct = ( outputNode !== undefined && outputNode.isOutputStructNode === true );
+			const isOutputStruct = (outputNode !== undefined && outputNode.isOutputStructNode === true);
 
-			for ( const node of flowNodes ) {
+			for (const node of flowNodes) {
 
-				const flowSlotData = this.getFlowData( node/*, shaderStage*/ );
+				const flowSlotData = this.getFlowData(node/*, shaderStage*/);
 				const slotName = node.name;
 
-				if ( slotName ) {
+				if (slotName) {
 
-					if ( flow.length > 0 ) flow += '\n';
+					if (flow.length > 0) flow += '\n';
 
-					flow += `\t// flow -> ${ slotName }\n\t`;
+					flow += `\t// flow -> ${slotName}\n\t`;
 
 				}
 
-				flow += `${ flowSlotData.code }\n\t`;
+				flow += `${flowSlotData.code}\n\t`;
 
-				if ( node === mainNode && shaderStage !== 'compute' ) {
+				if (node === mainNode && shaderStage !== 'compute') {
 
 					flow += '// result\n\n\t';
 
-					if ( shaderStage === 'vertex' ) {
+					if (shaderStage === 'vertex') {
 
-						flow += `varyings.Vertex = ${ flowSlotData.result };`;
+						flow += `varyings.Vertex = ${flowSlotData.result};`;
 
-					} else if ( shaderStage === 'fragment' ) {
+					} else if (shaderStage === 'fragment') {
 
-						if ( isOutputStruct ) {
+						if (isOutputStruct) {
 
 							stageData.returnType = outputNode.nodeType;
 
-							flow += `return ${ flowSlotData.result };`;
+							flow += `return ${flowSlotData.result};`;
 
 						} else {
 
 							let structSnippet = '\t@location(0) color: vec4<f32>';
 
-							const builtins = this.getBuiltins( 'output' );
+							const builtins = this.getBuiltins('output');
 
-							if ( builtins ) structSnippet += ',\n\t' + builtins;
+							if (builtins) structSnippet += ',\n\t' + builtins;
 
 							stageData.returnType = 'OutputStruct';
-							stageData.structs += this._getWGSLStruct( 'OutputStruct', structSnippet );
+							stageData.structs += this._getWGSLStruct('OutputStruct', structSnippet);
 							stageData.structs += '\nvar<private> output : OutputStruct;\n\n';
 
-							flow += `output.color = ${ flowSlotData.result };\n\n\treturn output;`;
+							flow += `output.color = ${flowSlotData.result};\n\n\treturn output;`;
 
 						}
 
@@ -895,32 +895,32 @@ ${ flowData.code }
 
 		}
 
-		if ( this.material !== null ) {
+		if (this.material !== null) {
 
-			this.vertexShader = this._getWGSLVertexCode( shadersData.vertex );
-			this.fragmentShader = this._getWGSLFragmentCode( shadersData.fragment );
+			this.vertexShader = this._getWGSLVertexCode(shadersData.vertex);
+			this.fragmentShader = this._getWGSLFragmentCode(shadersData.fragment);
 
 		} else {
 
-			this.computeShader = this._getWGSLComputeCode( shadersData.compute, ( this.object.workgroupSize || [ 64 ] ).join( ', ' ) );
+			this.computeShader = this._getWGSLComputeCode(shadersData.compute, (this.object.workgroupSize || [64]).join(', '));
 
 		}
 
 	}
 
-	getMethod( method, output = null ) {
+	getMethod(method, output = null) {
 
 		let wgslMethod;
 
-		if ( output !== null ) {
+		if (output !== null) {
 
-			wgslMethod = this._getWGSLMethod( method + '_' + output );
+			wgslMethod = this._getWGSLMethod(method + '_' + output);
 
 		}
 
-		if ( wgslMethod === undefined ) {
+		if (wgslMethod === undefined) {
 
-			wgslMethod = this._getWGSLMethod( method );
+			wgslMethod = this._getWGSLMethod(method);
 
 		}
 
@@ -928,38 +928,38 @@ ${ flowData.code }
 
 	}
 
-	getType( type ) {
+	getType(type) {
 
-		return wgslTypeLib[ type ] || type;
-
-	}
-
-	isAvailable( name ) {
-
-		return supports[ name ] === true;
+		return wgslTypeLib[type] || type;
 
 	}
 
-	_getWGSLMethod( method ) {
+	isAvailable(name) {
 
-		if ( wgslPolyfill[ method ] !== undefined ) {
+		return supports[name] === true;
 
-			this._include( method );
+	}
+
+	_getWGSLMethod(method) {
+
+		if (wgslPolyfill[method] !== undefined) {
+
+			this._include(method);
 
 		}
 
-		return wgslMethods[ method ];
+		return wgslMethods[method];
 
 	}
 
-	_include( name ) {
+	_include(name) {
 
-		const codeNode = wgslPolyfill[ name ];
-		codeNode.build( this );
+		const codeNode = wgslPolyfill[name];
+		codeNode.build(this);
 
-		if ( this.currentFunctionNode !== null ) {
+		if (this.currentFunctionNode !== null) {
 
-			this.currentFunctionNode.includes.push( codeNode );
+			this.currentFunctionNode.includes.push(codeNode);
 
 		}
 
@@ -967,9 +967,9 @@ ${ flowData.code }
 
 	}
 
-	_getWGSLVertexCode( shaderData ) {
+	_getWGSLVertexCode(shaderData) {
 
-		return `${ this.getSignature() }
+		return `${this.getSignature()}
 
 // uniforms
 ${shaderData.uniforms}
@@ -997,9 +997,9 @@ fn main( ${shaderData.attributes} ) -> VaryingsStruct {
 
 	}
 
-	_getWGSLFragmentCode( shaderData ) {
+	_getWGSLFragmentCode(shaderData) {
 
-		return `${ this.getSignature() }
+		return `${this.getSignature()}
 
 // uniforms
 ${shaderData.uniforms}
@@ -1024,9 +1024,9 @@ fn main( ${shaderData.varyings} ) -> ${shaderData.returnType} {
 
 	}
 
-	_getWGSLComputeCode( shaderData, workgroupSize ) {
+	_getWGSLComputeCode(shaderData, workgroupSize) {
 
-		return `${ this.getSignature() }
+		return `${this.getSignature()}
 // system
 var<private> instanceIndex : u32;
 
@@ -1053,7 +1053,7 @@ fn main( ${shaderData.attributes} ) {
 
 	}
 
-	_getWGSLStruct( name, vars ) {
+	_getWGSLStruct(name, vars) {
 
 		return `
 struct ${name} {
@@ -1062,10 +1062,10 @@ ${vars}
 
 	}
 
-	_getWGSLStructBinding( name, vars, access, binding = 0, group = 0 ) {
+	_getWGSLStructBinding(name, vars, access, binding = 0, group = 0) {
 
 		const structName = name + 'Struct';
-		const structSnippet = this._getWGSLStruct( structName, vars );
+		const structSnippet = this._getWGSLStruct(structName, vars);
 
 		return `${structSnippet}
 @binding( ${binding} ) @group( ${group} )

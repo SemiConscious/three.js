@@ -5,31 +5,31 @@ import { NodeUpdateType } from '../core/constants.js';
 import { nodeObject } from '../shadernode/ShaderNode.js';
 import { uniform } from '../core/UniformNode.js';
 import { viewZToOrthographicDepth, perspectiveDepthToViewZ } from './ViewportDepthNode.js';
-import { RenderTarget, Vector2, HalfFloatType, DepthTexture, NoToneMapping/*, FloatType*/ } from 'three';
+import { RenderTarget, Vector2, HalfFloatType, DepthTexture, NoToneMapping/*, FloatType*/ } from '@semiconscious/three';
 
 class PassTextureNode extends TextureNode {
 
-	constructor( passNode, texture ) {
+	constructor(passNode, texture) {
 
-		super( texture );
+		super(texture);
 
 		this.passNode = passNode;
 
-		this.setUpdateMatrix( false );
+		this.setUpdateMatrix(false);
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
-		this.passNode.build( builder );
+		this.passNode.build(builder);
 
-		return super.setup( builder );
+		return super.setup(builder);
 
 	}
 
 	clone() {
 
-		return new this.constructor( this.passNode, this.value );
+		return new this.constructor(this.passNode, this.value);
 
 	}
 
@@ -37,9 +37,9 @@ class PassTextureNode extends TextureNode {
 
 class PassNode extends TempNode {
 
-	constructor( scope, scene, camera ) {
+	constructor(scope, scene, camera) {
 
-		super( 'vec4' );
+		super('vec4');
 
 		this.scope = scope;
 		this.scene = scene;
@@ -54,7 +54,7 @@ class PassNode extends TempNode {
 		//depthTexture.type = FloatType;
 		depthTexture.name = 'PostProcessingDepth';
 
-		const renderTarget = new RenderTarget( this._width * this._pixelRatio, this._height * this._pixelRatio, { type: HalfFloatType } );
+		const renderTarget = new RenderTarget(this._width * this._pixelRatio, this._height * this._pixelRatio, { type: HalfFloatType });
 		renderTarget.texture.name = 'PostProcessing';
 		renderTarget.depthTexture = depthTexture;
 
@@ -62,12 +62,12 @@ class PassNode extends TempNode {
 
 		this.updateBeforeType = NodeUpdateType.FRAME;
 
-		this._textureNode = nodeObject( new PassTextureNode( this, renderTarget.texture ) );
-		this._depthTextureNode = nodeObject( new PassTextureNode( this, depthTexture ) );
+		this._textureNode = nodeObject(new PassTextureNode(this, renderTarget.texture));
+		this._depthTextureNode = nodeObject(new PassTextureNode(this, depthTexture));
 
 		this._depthNode = null;
-		this._cameraNear = uniform( 0 );
-		this._cameraFar = uniform( 0 );
+		this._cameraNear = uniform(0);
+		this._cameraFar = uniform(0);
 
 		this.isPassNode = true;
 
@@ -93,12 +93,12 @@ class PassNode extends TempNode {
 
 	getDepthNode() {
 
-		if ( this._depthNode === null ) {
+		if (this._depthNode === null) {
 
 			const cameraNear = this._cameraNear;
 			const cameraFar = this._cameraFar;
 
-			this._depthNode = viewZToOrthographicDepth( perspectiveDepthToViewZ( this._depthTextureNode, cameraNear, cameraFar ), cameraNear, cameraFar );
+			this._depthNode = viewZToOrthographicDepth(perspectiveDepthToViewZ(this._depthTextureNode, cameraNear, cameraFar), cameraNear, cameraFar);
 
 		}
 
@@ -112,16 +112,16 @@ class PassNode extends TempNode {
 
 	}
 
-	updateBefore( frame ) {
+	updateBefore(frame) {
 
 		const { renderer } = frame;
 		const { scene, camera } = this;
 
 		this._pixelRatio = renderer.getPixelRatio();
 
-		const size = renderer.getSize( new Vector2() );
+		const size = renderer.getSize(new Vector2());
 
-		this.setSize( size.width, size.height );
+		this.setSize(size.width, size.height);
 
 		const currentToneMapping = renderer.toneMapping;
 		const currentToneMappingNode = renderer.toneMappingNode;
@@ -132,17 +132,17 @@ class PassNode extends TempNode {
 
 		renderer.toneMapping = NoToneMapping;
 		renderer.toneMappingNode = null;
-		renderer.setRenderTarget( this.renderTarget );
+		renderer.setRenderTarget(this.renderTarget);
 
-		renderer.render( scene, camera );
+		renderer.render(scene, camera);
 
 		renderer.toneMapping = currentToneMapping;
 		renderer.toneMappingNode = currentToneMappingNode;
-		renderer.setRenderTarget( currentRenderTarget );
+		renderer.setRenderTarget(currentRenderTarget);
 
 	}
 
-	setSize( width, height ) {
+	setSize(width, height) {
 
 		this._width = width;
 		this._height = height;
@@ -150,15 +150,15 @@ class PassNode extends TempNode {
 		const effectiveWidth = this._width * this._pixelRatio;
 		const effectiveHeight = this._height * this._pixelRatio;
 
-		this.renderTarget.setSize( effectiveWidth, effectiveHeight );
+		this.renderTarget.setSize(effectiveWidth, effectiveHeight);
 
 	}
 
-	setPixelRatio( pixelRatio ) {
+	setPixelRatio(pixelRatio) {
 
 		this._pixelRatio = pixelRatio;
 
-		this.setSize( this._width, this._height );
+		this.setSize(this._width, this._height);
 
 	}
 
@@ -176,8 +176,8 @@ PassNode.DEPTH = 'depth';
 
 export default PassNode;
 
-export const pass = ( scene, camera ) => nodeObject( new PassNode( PassNode.COLOR, scene, camera ) );
-export const texturePass = ( pass, texture ) => nodeObject( new PassTextureNode( pass, texture ) );
-export const depthPass = ( scene, camera ) => nodeObject( new PassNode( PassNode.DEPTH, scene, camera ) );
+export const pass = (scene, camera) => nodeObject(new PassNode(PassNode.COLOR, scene, camera));
+export const texturePass = (pass, texture) => nodeObject(new PassTextureNode(pass, texture));
+export const depthPass = (scene, camera) => nodeObject(new PassNode(PassNode.DEPTH, scene, camera));
 
-addNodeClass( 'PassNode', PassNode );
+addNodeClass('PassNode', PassNode);

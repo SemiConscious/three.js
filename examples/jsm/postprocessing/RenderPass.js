@@ -1,11 +1,11 @@
 import {
 	Color
-} from 'three';
+} from '@semiconscious/three';
 import { Pass } from './Pass.js';
 
 class RenderPass extends Pass {
 
-	constructor( scene, camera, overrideMaterial = null, clearColor = null, clearAlpha = null ) {
+	constructor(scene, camera, overrideMaterial = null, clearColor = null, clearAlpha = null) {
 
 		super();
 
@@ -24,14 +24,14 @@ class RenderPass extends Pass {
 
 	}
 
-	render( renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */ ) {
+	render(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
 		const oldAutoClear = renderer.autoClear;
 		renderer.autoClear = false;
 
 		let oldClearAlpha, oldOverrideMaterial;
 
-		if ( this.overrideMaterial !== null ) {
+		if (this.overrideMaterial !== null) {
 
 			oldOverrideMaterial = this.scene.overrideMaterial;
 
@@ -39,52 +39,52 @@ class RenderPass extends Pass {
 
 		}
 
-		if ( this.clearColor !== null ) {
+		if (this.clearColor !== null) {
 
-			renderer.getClearColor( this._oldClearColor );
-			renderer.setClearColor( this.clearColor );
+			renderer.getClearColor(this._oldClearColor);
+			renderer.setClearColor(this.clearColor);
 
 		}
 
-		if ( this.clearAlpha !== null ) {
+		if (this.clearAlpha !== null) {
 
 			oldClearAlpha = renderer.getClearAlpha();
-			renderer.setClearAlpha( this.clearAlpha );
+			renderer.setClearAlpha(this.clearAlpha);
 
 		}
 
-		if ( this.clearDepth == true ) {
+		if (this.clearDepth == true) {
 
 			renderer.clearDepth();
 
 		}
 
-		renderer.setRenderTarget( this.renderToScreen ? null : readBuffer );
+		renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);
 
-		if ( this.clear === true ) {
+		if (this.clear === true) {
 
 			// TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
-			renderer.clear( renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil );
+			renderer.clear(renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil);
 
 		}
 
-		renderer.render( this.scene, this.camera );
+		renderer.render(this.scene, this.camera);
 
 		// restore
 
-		if ( this.clearColor !== null ) {
+		if (this.clearColor !== null) {
 
-			renderer.setClearColor( this._oldClearColor );
-
-		}
-
-		if ( this.clearAlpha !== null ) {
-
-			renderer.setClearAlpha( oldClearAlpha );
+			renderer.setClearColor(this._oldClearColor);
 
 		}
 
-		if ( this.overrideMaterial !== null ) {
+		if (this.clearAlpha !== null) {
+
+			renderer.setClearAlpha(oldClearAlpha);
+
+		}
+
+		if (this.overrideMaterial !== null) {
 
 			this.scene.overrideMaterial = oldOverrideMaterial;
 

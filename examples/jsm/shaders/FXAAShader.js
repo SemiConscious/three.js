@@ -1,6 +1,6 @@
 import {
 	Vector2
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * NVIDIA FXAA by Timothy Lottes
@@ -17,7 +17,7 @@ const FXAAShader = {
 	uniforms: {
 
 		'tDiffuse': { value: null },
-		'resolution': { value: new Vector2( 1 / 1024, 1 / 512 ) }
+		'resolution': { value: new Vector2(1 / 1024, 1 / 512) }
 
 	},
 

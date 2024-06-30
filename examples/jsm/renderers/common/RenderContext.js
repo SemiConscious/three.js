@@ -1,4 +1,4 @@
-import { Vector4 } from 'three';
+import { Vector4 } from '@semiconscious/three';
 
 let id = 0;
 
@@ -6,7 +6,7 @@ class RenderContext {
 
 	constructor() {
 
-		this.id = id ++;
+		this.id = id++;
 
 		this.color = true;
 		this.clearColor = true;

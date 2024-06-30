@@ -4,13 +4,13 @@ import { materialShininess, materialSpecularColor } from '../accessors/MaterialN
 import { float } from '../shadernode/ShaderNode.js';
 import PhongLightingModel from '../functions/PhongLightingModel.js';
 
-import { MeshPhongMaterial } from 'three';
+import { MeshPhongMaterial } from '@semiconscious/three';
 
 const defaultValues = new MeshPhongMaterial();
 
 class MeshPhongNodeMaterial extends NodeMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -21,13 +21,13 @@ class MeshPhongNodeMaterial extends NodeMaterial {
 		this.shininessNode = null;
 		this.specularNode = null;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
-	setupLightingModel( /*builder*/ ) {
+	setupLightingModel( /*builder*/) {
 
 		return new PhongLightingModel();
 
@@ -37,24 +37,24 @@ class MeshPhongNodeMaterial extends NodeMaterial {
 
 		// SHININESS
 
-		const shininessNode = ( this.shininessNode ? float( this.shininessNode ) : materialShininess ).max( 1e-4 ); // to prevent pow( 0.0, 0.0 )
+		const shininessNode = (this.shininessNode ? float(this.shininessNode) : materialShininess).max(1e-4); // to prevent pow( 0.0, 0.0 )
 
-		shininess.assign( shininessNode );
+		shininess.assign(shininessNode);
 
 		// SPECULAR COLOR
 
 		const specularNode = this.specularNode || materialSpecularColor;
 
-		specularColor.assign( specularNode );
+		specularColor.assign(specularNode);
 
 	}
 
-	copy( source ) {
+	copy(source) {
 
 		this.shininessNode = source.shininessNode;
 		this.specularNode = source.specularNode;
 
-		return super.copy( source );
+		return super.copy(source);
 
 	}
 
@@ -62,4 +62,4 @@ class MeshPhongNodeMaterial extends NodeMaterial {
 
 export default MeshPhongNodeMaterial;
 
-addNodeMaterial( 'MeshPhongNodeMaterial', MeshPhongNodeMaterial );
+addNodeMaterial('MeshPhongNodeMaterial', MeshPhongNodeMaterial);

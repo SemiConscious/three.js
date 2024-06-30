@@ -1,12 +1,12 @@
 import DataMap from '../DataMap.js';
 import ChainMap from '../ChainMap.js';
 import NodeBuilderState from './NodeBuilderState.js';
-import { NoToneMapping, EquirectangularReflectionMapping, EquirectangularRefractionMapping } from 'three';
+import { NoToneMapping, EquirectangularReflectionMapping, EquirectangularRefractionMapping } from '@semiconscious/three';
 import { NodeFrame, objectGroup, renderGroup, frameGroup, cubeTexture, texture, rangeFog, densityFog, reference, toneMapping, equirectUV, viewportBottomLeft, normalWorld } from '../../../nodes/Nodes.js';
 
 class Nodes extends DataMap {
 
-	constructor( renderer, backend ) {
+	constructor(renderer, backend) {
 
 		super();
 
@@ -19,23 +19,23 @@ class Nodes extends DataMap {
 
 	}
 
-	updateGroup( nodeUniformsGroup ) {
+	updateGroup(nodeUniformsGroup) {
 
 		const groupNode = nodeUniformsGroup.groupNode;
 		const name = groupNode.name;
 
 		// objectGroup is every updated
 
-		if ( name === objectGroup.name ) return true;
+		if (name === objectGroup.name) return true;
 
 		// renderGroup is updated once per render/compute call
 
-		if ( name === renderGroup.name ) {
+		if (name === renderGroup.name) {
 
-			const uniformsGroupData = this.get( nodeUniformsGroup );
+			const uniformsGroupData = this.get(nodeUniformsGroup);
 			const renderId = this.nodeFrame.renderId;
 
-			if ( uniformsGroupData.renderId !== renderId ) {
+			if (uniformsGroupData.renderId !== renderId) {
 
 				uniformsGroupData.renderId = renderId;
 
@@ -49,12 +49,12 @@ class Nodes extends DataMap {
 
 		// frameGroup is updated once per frame
 
-		if ( name === frameGroup.name ) {
+		if (name === frameGroup.name) {
 
-			const uniformsGroupData = this.get( nodeUniformsGroup );
+			const uniformsGroupData = this.get(nodeUniformsGroup);
 			const frameId = this.nodeFrame.frameId;
 
-			if ( uniformsGroupData.frameId !== frameId ) {
+			if (uniformsGroupData.frameId !== frameId) {
 
 				uniformsGroupData.frameId = frameId;
 
@@ -68,12 +68,12 @@ class Nodes extends DataMap {
 
 		// other groups are updated just when groupNode.needsUpdate is true
 
-		const groupChain = [ groupNode, nodeUniformsGroup ];
+		const groupChain = [groupNode, nodeUniformsGroup];
 
-		let groupData = this.groupsData.get( groupChain );
-		if ( groupData === undefined ) this.groupsData.set( groupChain, groupData = {} );
+		let groupData = this.groupsData.get(groupChain);
+		if (groupData === undefined) this.groupsData.set(groupChain, groupData = {});
 
-		if ( groupData.version !== groupNode.version ) {
+		if (groupData.version !== groupNode.version) {
 
 			groupData.version = groupNode.version;
 
@@ -85,45 +85,45 @@ class Nodes extends DataMap {
 
 	}
 
-	getForRenderCacheKey( renderObject ) {
+	getForRenderCacheKey(renderObject) {
 
 		return renderObject.initialCacheKey;
 
 	}
 
-	getForRender( renderObject ) {
+	getForRender(renderObject) {
 
-		const renderObjectData = this.get( renderObject );
+		const renderObjectData = this.get(renderObject);
 
 		let nodeBuilderState = renderObjectData.nodeBuilderState;
 
-		if ( nodeBuilderState === undefined ) {
+		if (nodeBuilderState === undefined) {
 
 			const { nodeBuilderCache } = this;
 
-			const cacheKey = this.getForRenderCacheKey( renderObject );
+			const cacheKey = this.getForRenderCacheKey(renderObject);
 
-			nodeBuilderState = nodeBuilderCache.get( cacheKey );
+			nodeBuilderState = nodeBuilderCache.get(cacheKey);
 
-			if ( nodeBuilderState === undefined ) {
+			if (nodeBuilderState === undefined) {
 
-				const nodeBuilder = this.backend.createNodeBuilder( renderObject.object, this.renderer, renderObject.scene );
+				const nodeBuilder = this.backend.createNodeBuilder(renderObject.object, this.renderer, renderObject.scene);
 				nodeBuilder.material = renderObject.material;
 				nodeBuilder.context.material = renderObject.material;
 				nodeBuilder.lightsNode = renderObject.lightsNode;
-				nodeBuilder.environmentNode = this.getEnvironmentNode( renderObject.scene );
-				nodeBuilder.fogNode = this.getFogNode( renderObject.scene );
+				nodeBuilder.environmentNode = this.getEnvironmentNode(renderObject.scene);
+				nodeBuilder.fogNode = this.getFogNode(renderObject.scene);
 				nodeBuilder.toneMappingNode = this.getToneMappingNode();
 				nodeBuilder.clippingContext = renderObject.clippingContext;
 				nodeBuilder.build();
 
-				nodeBuilderState = this._createNodeBuilderState( nodeBuilder );
+				nodeBuilderState = this._createNodeBuilderState(nodeBuilder);
 
-				nodeBuilderCache.set( cacheKey, nodeBuilderState );
+				nodeBuilderCache.set(cacheKey, nodeBuilderState);
 
 			}
 
-			nodeBuilderState.usedTimes ++;
+			nodeBuilderState.usedTimes++;
 
 			renderObjectData.nodeBuilderState = nodeBuilderState;
 
@@ -133,37 +133,37 @@ class Nodes extends DataMap {
 
 	}
 
-	delete( object ) {
+	delete(object) {
 
-		if ( object.isRenderObject ) {
+		if (object.isRenderObject) {
 
-			const nodeBuilderState = this.get( object ).nodeBuilderState;
-			nodeBuilderState.usedTimes --;
+			const nodeBuilderState = this.get(object).nodeBuilderState;
+			nodeBuilderState.usedTimes--;
 
-			if ( nodeBuilderState.usedTimes === 0 ) {
+			if (nodeBuilderState.usedTimes === 0) {
 
-				this.nodeBuilderCache.delete( this.getForRenderCacheKey( object ) );
+				this.nodeBuilderCache.delete(this.getForRenderCacheKey(object));
 
 			}
 
 		}
 
-		return super.delete( object );
+		return super.delete(object);
 
 	}
 
-	getForCompute( computeNode ) {
+	getForCompute(computeNode) {
 
-		const computeData = this.get( computeNode );
+		const computeData = this.get(computeNode);
 
 		let nodeBuilderState = computeData.nodeBuilderState;
 
-		if ( nodeBuilderState === undefined ) {
+		if (nodeBuilderState === undefined) {
 
-			const nodeBuilder = this.backend.createNodeBuilder( computeNode, this.renderer );
+			const nodeBuilder = this.backend.createNodeBuilder(computeNode, this.renderer);
 			nodeBuilder.build();
 
-			nodeBuilderState = this._createNodeBuilderState( nodeBuilder );
+			nodeBuilderState = this._createNodeBuilderState(nodeBuilder);
 
 			computeData.nodeBuilderState = nodeBuilderState;
 
@@ -173,7 +173,7 @@ class Nodes extends DataMap {
 
 	}
 
-	_createNodeBuilderState( nodeBuilder ) {
+	_createNodeBuilderState(nodeBuilder) {
 
 		return new NodeBuilderState(
 			nodeBuilder.vertexShader,
@@ -188,58 +188,58 @@ class Nodes extends DataMap {
 
 	}
 
-	getEnvironmentNode( scene ) {
+	getEnvironmentNode(scene) {
 
-		return scene.environmentNode || this.get( scene ).environmentNode || null;
-
-	}
-
-	getBackgroundNode( scene ) {
-
-		return scene.backgroundNode || this.get( scene ).backgroundNode || null;
+		return scene.environmentNode || this.get(scene).environmentNode || null;
 
 	}
 
-	getFogNode( scene ) {
+	getBackgroundNode(scene) {
 
-		return scene.fogNode || this.get( scene ).fogNode || null;
+		return scene.backgroundNode || this.get(scene).backgroundNode || null;
+
+	}
+
+	getFogNode(scene) {
+
+		return scene.fogNode || this.get(scene).fogNode || null;
 
 	}
 
 	getToneMappingNode() {
 
-		if ( this.isToneMappingState === false ) return null;
+		if (this.isToneMappingState === false) return null;
 
-		return this.renderer.toneMappingNode || this.get( this.renderer ).toneMappingNode || null;
+		return this.renderer.toneMappingNode || this.get(this.renderer).toneMappingNode || null;
 
 	}
 
-	getCacheKey( scene, lightsNode ) {
+	getCacheKey(scene, lightsNode) {
 
-		const chain = [ scene, lightsNode ];
+		const chain = [scene, lightsNode];
 		const callId = this.renderer.info.calls;
 
-		let cacheKeyData = this.callHashCache.get( chain );
+		let cacheKeyData = this.callHashCache.get(chain);
 
-		if ( cacheKeyData === undefined || cacheKeyData.callId !== callId ) {
+		if (cacheKeyData === undefined || cacheKeyData.callId !== callId) {
 
-			const environmentNode = this.getEnvironmentNode( scene );
-			const fogNode = this.getFogNode( scene );
+			const environmentNode = this.getEnvironmentNode(scene);
+			const fogNode = this.getFogNode(scene);
 			const toneMappingNode = this.getToneMappingNode();
 
 			const cacheKey = [];
 
-			if ( lightsNode ) cacheKey.push( lightsNode.getCacheKey() );
-			if ( environmentNode ) cacheKey.push( environmentNode.getCacheKey() );
-			if ( fogNode ) cacheKey.push( fogNode.getCacheKey() );
-			if ( toneMappingNode ) cacheKey.push( toneMappingNode.getCacheKey() );
+			if (lightsNode) cacheKey.push(lightsNode.getCacheKey());
+			if (environmentNode) cacheKey.push(environmentNode.getCacheKey());
+			if (fogNode) cacheKey.push(fogNode.getCacheKey());
+			if (toneMappingNode) cacheKey.push(toneMappingNode.getCacheKey());
 
 			cacheKeyData = {
 				callId,
-				cacheKey: cacheKey.join( ',' )
+				cacheKey: cacheKey.join(',')
 			};
 
-			this.callHashCache.set( chain, cacheKeyData );
+			this.callHashCache.set(chain, cacheKeyData);
 
 		}
 
@@ -247,11 +247,11 @@ class Nodes extends DataMap {
 
 	}
 
-	updateScene( scene ) {
+	updateScene(scene) {
 
-		this.updateEnvironment( scene );
-		this.updateFog( scene );
-		this.updateBackground( scene );
+		this.updateEnvironment(scene);
+		this.updateFog(scene);
+		this.updateBackground(scene);
 		this.updateToneMapping();
 
 	}
@@ -268,14 +268,14 @@ class Nodes extends DataMap {
 	updateToneMapping() {
 
 		const renderer = this.renderer;
-		const rendererData = this.get( renderer );
+		const rendererData = this.get(renderer);
 		const rendererToneMapping = renderer.toneMapping;
 
-		if ( this.isToneMappingState && rendererToneMapping !== NoToneMapping ) {
+		if (this.isToneMappingState && rendererToneMapping !== NoToneMapping) {
 
-			if ( rendererData.toneMapping !== rendererToneMapping ) {
+			if (rendererData.toneMapping !== rendererToneMapping) {
 
-				const rendererToneMappingNode = rendererData.rendererToneMappingNode || toneMapping( rendererToneMapping, reference( 'toneMappingExposure', 'float', renderer ) );
+				const rendererToneMappingNode = rendererData.rendererToneMappingNode || toneMapping(rendererToneMapping, reference('toneMappingExposure', 'float', renderer));
 				rendererToneMappingNode.toneMapping = rendererToneMapping;
 
 				rendererData.rendererToneMappingNode = rendererToneMappingNode;
@@ -294,26 +294,26 @@ class Nodes extends DataMap {
 
 	}
 
-	updateBackground( scene ) {
+	updateBackground(scene) {
 
-		const sceneData = this.get( scene );
+		const sceneData = this.get(scene);
 		const background = scene.background;
 
-		if ( background ) {
+		if (background) {
 
-			if ( sceneData.background !== background ) {
+			if (sceneData.background !== background) {
 
 				let backgroundNode = null;
 
-				if ( background.isCubeTexture === true ) {
+				if (background.isCubeTexture === true) {
 
-					backgroundNode = cubeTexture( background, normalWorld );
+					backgroundNode = cubeTexture(background, normalWorld);
 
-				} else if ( background.isTexture === true ) {
+				} else if (background.isTexture === true) {
 
 					let nodeUV = null;
 
-					if ( background.mapping === EquirectangularReflectionMapping || background.mapping === EquirectangularRefractionMapping ) {
+					if (background.mapping === EquirectangularReflectionMapping || background.mapping === EquirectangularRefractionMapping) {
 
 						nodeUV = equirectUV();
 						background.flipY = false;
@@ -324,11 +324,11 @@ class Nodes extends DataMap {
 
 					}
 
-					backgroundNode = texture( background, nodeUV ).setUpdateMatrix( true );
+					backgroundNode = texture(background, nodeUV).setUpdateMatrix(true);
 
-				} else if ( background.isColor !== true ) {
+				} else if (background.isColor !== true) {
 
-					console.error( 'WebGPUNodes: Unsupported background configuration.', background );
+					console.error('WebGPUNodes: Unsupported background configuration.', background);
 
 				}
 
@@ -337,7 +337,7 @@ class Nodes extends DataMap {
 
 			}
 
-		} else if ( sceneData.backgroundNode ) {
+		} else if (sceneData.backgroundNode) {
 
 			delete sceneData.backgroundNode;
 			delete sceneData.background;
@@ -346,28 +346,28 @@ class Nodes extends DataMap {
 
 	}
 
-	updateFog( scene ) {
+	updateFog(scene) {
 
-		const sceneData = this.get( scene );
+		const sceneData = this.get(scene);
 		const fog = scene.fog;
 
-		if ( fog ) {
+		if (fog) {
 
-			if ( sceneData.fog !== fog ) {
+			if (sceneData.fog !== fog) {
 
 				let fogNode = null;
 
-				if ( fog.isFogExp2 ) {
+				if (fog.isFogExp2) {
 
-					fogNode = densityFog( reference( 'color', 'color', fog ), reference( 'density', 'float', fog ) );
+					fogNode = densityFog(reference('color', 'color', fog), reference('density', 'float', fog));
 
-				} else if ( fog.isFog ) {
+				} else if (fog.isFog) {
 
-					fogNode = rangeFog( reference( 'color', 'color', fog ), reference( 'near', 'float', fog ), reference( 'far', 'float', fog ) );
+					fogNode = rangeFog(reference('color', 'color', fog), reference('near', 'float', fog), reference('far', 'float', fog));
 
 				} else {
 
-					console.error( 'WebGPUNodes: Unsupported fog configuration.', fog );
+					console.error('WebGPUNodes: Unsupported fog configuration.', fog);
 
 				}
 
@@ -385,28 +385,28 @@ class Nodes extends DataMap {
 
 	}
 
-	updateEnvironment( scene ) {
+	updateEnvironment(scene) {
 
-		const sceneData = this.get( scene );
+		const sceneData = this.get(scene);
 		const environment = scene.environment;
 
-		if ( environment ) {
+		if (environment) {
 
-			if ( sceneData.environment !== environment ) {
+			if (sceneData.environment !== environment) {
 
 				let environmentNode = null;
 
-				if ( environment.isCubeTexture === true ) {
+				if (environment.isCubeTexture === true) {
 
-					environmentNode = cubeTexture( environment );
+					environmentNode = cubeTexture(environment);
 
-				} else if ( environment.isTexture === true ) {
+				} else if (environment.isTexture === true) {
 
-					environmentNode = texture( environment );
+					environmentNode = texture(environment);
 
 				} else {
 
-					console.error( 'Nodes: Unsupported environment configuration.', environment );
+					console.error('Nodes: Unsupported environment configuration.', environment);
 
 				}
 
@@ -415,7 +415,7 @@ class Nodes extends DataMap {
 
 			}
 
-		} else if ( sceneData.environmentNode ) {
+		} else if (sceneData.environmentNode) {
 
 			delete sceneData.environmentNode;
 			delete sceneData.environment;
@@ -424,7 +424,7 @@ class Nodes extends DataMap {
 
 	}
 
-	getNodeFrame( renderer = this.renderer, scene = null, object = null, camera = null, material = null ) {
+	getNodeFrame(renderer = this.renderer, scene = null, object = null, camera = null, material = null) {
 
 		const nodeFrame = this.nodeFrame;
 		nodeFrame.renderer = renderer;
@@ -437,46 +437,46 @@ class Nodes extends DataMap {
 
 	}
 
-	getNodeFrameForRender( renderObject ) {
+	getNodeFrameForRender(renderObject) {
 
-		return this.getNodeFrame( renderObject.renderer, renderObject.scene, renderObject.object, renderObject.camera, renderObject.material );
+		return this.getNodeFrame(renderObject.renderer, renderObject.scene, renderObject.object, renderObject.camera, renderObject.material);
 
 	}
 
-	updateBefore( renderObject ) {
+	updateBefore(renderObject) {
 
-		const nodeFrame = this.getNodeFrameForRender( renderObject );
+		const nodeFrame = this.getNodeFrameForRender(renderObject);
 		const nodeBuilder = renderObject.getNodeBuilderState();
 
-		for ( const node of nodeBuilder.updateBeforeNodes ) {
+		for (const node of nodeBuilder.updateBeforeNodes) {
 
-			nodeFrame.updateBeforeNode( node );
+			nodeFrame.updateBeforeNode(node);
 
 		}
 
 	}
 
-	updateForCompute( computeNode ) {
+	updateForCompute(computeNode) {
 
 		const nodeFrame = this.getNodeFrame();
-		const nodeBuilder = this.getForCompute( computeNode );
+		const nodeBuilder = this.getForCompute(computeNode);
 
-		for ( const node of nodeBuilder.updateNodes ) {
+		for (const node of nodeBuilder.updateNodes) {
 
-			nodeFrame.updateNode( node );
+			nodeFrame.updateNode(node);
 
 		}
 
 	}
 
-	updateForRender( renderObject ) {
+	updateForRender(renderObject) {
 
-		const nodeFrame = this.getNodeFrameForRender( renderObject );
+		const nodeFrame = this.getNodeFrameForRender(renderObject);
 		const nodeBuilder = renderObject.getNodeBuilderState();
 
-		for ( const node of nodeBuilder.updateNodes ) {
+		for (const node of nodeBuilder.updateNodes) {
 
-			nodeFrame.updateNode( node );
+			nodeFrame.updateNode(node);
 
 		}
 

@@ -1,11 +1,11 @@
 import Node, { addNodeClass } from '../core/Node.js';
 import { arrayBufferToBase64, base64ToArrayBuffer } from '../core/NodeUtils.js';
 import { addNodeElement, nodeProxy, float } from '../shadernode/ShaderNode.js';
-import { EventDispatcher } from 'three';
+import { EventDispatcher } from '@semiconscious/three';
 
 class ScriptableValueNode extends Node {
 
-	constructor( value = null ) {
+	constructor(value = null) {
 
 		super();
 
@@ -27,13 +27,13 @@ class ScriptableValueNode extends Node {
 
 	}
 
-	set value( val ) {
+	set value(val) {
 
-		if ( this._value === val ) return;
+		if (this._value === val) return;
 
-		if ( this._cache && this.inputType === 'URL' && this.value.value instanceof ArrayBuffer ) {
+		if (this._cache && this.inputType === 'URL' && this.value.value instanceof ArrayBuffer) {
 
-			URL.revokeObjectURL( this._cache );
+			URL.revokeObjectURL(this._cache);
 
 			this._cache = null;
 
@@ -41,7 +41,7 @@ class ScriptableValueNode extends Node {
 
 		this._value = val;
 
-		this.events.dispatchEvent( { type: 'change' } );
+		this.events.dispatchEvent({ type: 'change' });
 
 		this.refresh();
 
@@ -55,7 +55,7 @@ class ScriptableValueNode extends Node {
 
 	refresh() {
 
-		this.events.dispatchEvent( { type: 'refresh' } );
+		this.events.dispatchEvent({ type: 'refresh' });
 
 	}
 
@@ -63,20 +63,20 @@ class ScriptableValueNode extends Node {
 
 		const value = this.value;
 
-		if ( value && this._cache === null && this.inputType === 'URL' && value.value instanceof ArrayBuffer ) {
+		if (value && this._cache === null && this.inputType === 'URL' && value.value instanceof ArrayBuffer) {
 
-			this._cache = URL.createObjectURL( new Blob( [ value.value ] ) );
+			this._cache = URL.createObjectURL(new Blob([value.value]));
 
-		} else if ( value && value.value !== null && value.value !== undefined && (
-			( ( this.inputType === 'URL' || this.inputType === 'String' ) && typeof value.value === 'string' ) ||
-			( this.inputType === 'Number' && typeof value.value === 'number' ) ||
-			( this.inputType === 'Vector2' && value.value.isVector2 ) ||
-			( this.inputType === 'Vector3' && value.value.isVector3 ) ||
-			( this.inputType === 'Vector4' && value.value.isVector4 ) ||
-			( this.inputType === 'Color' && value.value.isColor ) ||
-			( this.inputType === 'Matrix3' && value.value.isMatrix3 ) ||
-			( this.inputType === 'Matrix4' && value.value.isMatrix4 )
-		) ) {
+		} else if (value && value.value !== null && value.value !== undefined && (
+			((this.inputType === 'URL' || this.inputType === 'String') && typeof value.value === 'string') ||
+			(this.inputType === 'Number' && typeof value.value === 'number') ||
+			(this.inputType === 'Vector2' && value.value.isVector2) ||
+			(this.inputType === 'Vector3' && value.value.isVector3) ||
+			(this.inputType === 'Vector4' && value.value.isVector4) ||
+			(this.inputType === 'Color' && value.value.isColor) ||
+			(this.inputType === 'Matrix3' && value.value.isMatrix3) ||
+			(this.inputType === 'Matrix4' && value.value.isMatrix4)
+		)) {
 
 			return value.value;
 
@@ -86,9 +86,9 @@ class ScriptableValueNode extends Node {
 
 	}
 
-	getNodeType( builder ) {
+	getNodeType(builder) {
 
-		return this.value && this.value.isNode ? this.value.getNodeType( builder ) : 'float';
+		return this.value && this.value.isNode ? this.value.getNodeType(builder) : 'float';
 
 	}
 
@@ -98,19 +98,19 @@ class ScriptableValueNode extends Node {
 
 	}
 
-	serialize( data ) {
+	serialize(data) {
 
-		super.serialize( data );
+		super.serialize(data);
 
-		if ( this.value !== null ) {
+		if (this.value !== null) {
 
-			if ( this.inputType === 'ArrayBuffer' ) {
+			if (this.inputType === 'ArrayBuffer') {
 
-				data.value = arrayBufferToBase64( this.value );
+				data.value = arrayBufferToBase64(this.value);
 
 			} else {
 
-				data.value = this.value ? this.value.toJSON( data.meta ).uuid : null;
+				data.value = this.value ? this.value.toJSON(data.meta).uuid : null;
 
 			}
 
@@ -125,25 +125,25 @@ class ScriptableValueNode extends Node {
 
 	}
 
-	deserialize( data ) {
+	deserialize(data) {
 
-		super.deserialize( data );
+		super.deserialize(data);
 
 		let value = null;
 
-		if ( data.value !== null ) {
+		if (data.value !== null) {
 
-			if ( data.inputType === 'ArrayBuffer' ) {
+			if (data.inputType === 'ArrayBuffer') {
 
-				value = base64ToArrayBuffer( data.value );
+				value = base64ToArrayBuffer(data.value);
 
-			} else if ( data.inputType === 'Texture' ) {
+			} else if (data.inputType === 'Texture') {
 
-				value = data.meta.textures[ data.value ];
+				value = data.meta.textures[data.value];
 
 			} else {
 
-				value = data.meta.nodes[ data.value ] || null;
+				value = data.meta.nodes[data.value] || null;
 
 			}
 
@@ -160,8 +160,8 @@ class ScriptableValueNode extends Node {
 
 export default ScriptableValueNode;
 
-export const scriptableValue = nodeProxy( ScriptableValueNode );
+export const scriptableValue = nodeProxy(ScriptableValueNode);
 
-addNodeElement( 'scriptableValue', scriptableValue );
+addNodeElement('scriptableValue', scriptableValue);
 
-addNodeClass( 'ScriptableValueNode', ScriptableValueNode );
+addNodeClass('ScriptableValueNode', ScriptableValueNode);

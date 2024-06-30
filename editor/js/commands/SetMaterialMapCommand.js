@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import { ObjectLoader } from 'three';
+import { ObjectLoader } from '@semiconscious/three';
 
 /**
  * @param editor Editor
@@ -10,9 +10,9 @@ import { ObjectLoader } from 'three';
  */
 class SetMaterialMapCommand extends Command {
 
-	constructor( editor, object, mapName, newMap, materialSlot ) {
+	constructor(editor, object, mapName, newMap, materialSlot) {
 
-		super( editor );
+		super(editor);
 
 		this.type = 'SetMaterialMapCommand';
 		this.name = `Set Material.${mapName}`;
@@ -20,9 +20,9 @@ class SetMaterialMapCommand extends Command {
 		this.object = object;
 		this.materialSlot = materialSlot;
 
-		this.material = this.editor.getObjectMaterial( object, materialSlot );
+		this.material = this.editor.getObjectMaterial(object, materialSlot);
 
-		this.oldMap = ( object !== undefined ) ? this.material[ mapName ] : undefined;
+		this.oldMap = (object !== undefined) ? this.material[mapName] : undefined;
 		this.newMap = newMap;
 
 		this.mapName = mapName;
@@ -31,40 +31,40 @@ class SetMaterialMapCommand extends Command {
 
 	execute() {
 
-		if ( this.oldMap !== null && this.oldMap !== undefined ) this.oldMap.dispose();
+		if (this.oldMap !== null && this.oldMap !== undefined) this.oldMap.dispose();
 
-		this.material[ this.mapName ] = this.newMap;
+		this.material[this.mapName] = this.newMap;
 		this.material.needsUpdate = true;
 
-		this.editor.signals.materialChanged.dispatch( this.object, this.materialSlot );
+		this.editor.signals.materialChanged.dispatch(this.object, this.materialSlot);
 
 	}
 
 	undo() {
 
-		this.material[ this.mapName ] = this.oldMap;
+		this.material[this.mapName] = this.oldMap;
 		this.material.needsUpdate = true;
 
-		this.editor.signals.materialChanged.dispatch( this.object, this.materialSlot );
+		this.editor.signals.materialChanged.dispatch(this.object, this.materialSlot);
 
 	}
 
 	toJSON() {
 
-		const output = super.toJSON( this );
+		const output = super.toJSON(this);
 
 		output.objectUuid = this.object.uuid;
 		output.mapName = this.mapName;
-		output.newMap = serializeMap( this.newMap );
-		output.oldMap = serializeMap( this.oldMap );
+		output.newMap = serializeMap(this.newMap);
+		output.oldMap = serializeMap(this.oldMap);
 
 		return output;
 
 		// serializes a map (THREE.Texture)
 
-		function serializeMap( map ) {
+		function serializeMap(map) {
 
-			if ( map === null || map === undefined ) return null;
+			if (map === null || map === undefined) return null;
 
 			const meta = {
 				geometries: {},
@@ -73,9 +73,9 @@ class SetMaterialMapCommand extends Command {
 				images: {}
 			};
 
-			const json = map.toJSON( meta );
-			const images = extractFromCache( meta.images );
-			if ( images.length > 0 ) json.images = images;
+			const json = map.toJSON(meta);
+			const images = extractFromCache(meta.images);
+			if (images.length > 0) json.images = images;
 			json.sourceFile = map.sourceFile;
 
 			return json;
@@ -87,14 +87,14 @@ class SetMaterialMapCommand extends Command {
 		// extract data from the cache hash
 		// remove metadata on each item
 		// and return as array
-		function extractFromCache( cache ) {
+		function extractFromCache(cache) {
 
 			const values = [];
-			for ( const key in cache ) {
+			for (const key in cache) {
 
-				const data = cache[ key ];
+				const data = cache[key];
 				delete data.metadata;
-				values.push( data );
+				values.push(data);
 
 			}
 
@@ -104,24 +104,24 @@ class SetMaterialMapCommand extends Command {
 
 	}
 
-	fromJSON( json ) {
+	fromJSON(json) {
 
-		super.fromJSON( json );
+		super.fromJSON(json);
 
-		this.object = this.editor.objectByUuid( json.objectUuid );
+		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.mapName = json.mapName;
-		this.oldMap = parseTexture( json.oldMap );
-		this.newMap = parseTexture( json.newMap );
+		this.oldMap = parseTexture(json.oldMap);
+		this.newMap = parseTexture(json.newMap);
 
-		function parseTexture( json ) {
+		function parseTexture(json) {
 
 			let map = null;
-			if ( json !== null ) {
+			if (json !== null) {
 
 				const loader = new ObjectLoader();
-				const images = loader.parseImages( json.images );
-				const textures = loader.parseTextures( [ json ], images );
-				map = textures[ json.uuid ];
+				const images = loader.parseImages(json.images);
+				const textures = loader.parseTextures([json], images);
+				map = textures[json.uuid];
 				map.sourceFile = json.sourceFile;
 
 			}

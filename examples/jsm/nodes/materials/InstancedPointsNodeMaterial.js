@@ -11,13 +11,13 @@ import { tslFn, vec2, vec4 } from '../shadernode/ShaderNode.js';
 import { uv } from '../accessors/UVNode.js';
 import { viewport } from '../display/ViewportNode.js';
 
-import { PointsMaterial } from 'three';
+import { PointsMaterial } from '@semiconscious/three';
 
 const defaultValues = new PointsMaterial();
 
 class InstancedPointsNodeMaterial extends NodeMaterial {
 
-	constructor( params = {} ) {
+	constructor(params = {}) {
 
 		super();
 
@@ -33,11 +33,11 @@ class InstancedPointsNodeMaterial extends NodeMaterial {
 
 		this.pointColorNode = null;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
 		this.setupShaders();
 
-		this.setValues( params );
+		this.setValues(params);
 
 	}
 
@@ -46,81 +46,81 @@ class InstancedPointsNodeMaterial extends NodeMaterial {
 		const useAlphaToCoverage = this.alphaToCoverage;
 		const useColor = this.useColor;
 
-		this.vertexNode = tslFn( () => {
+		this.vertexNode = tslFn(() => {
 
 			//vUv = uv;
-			varying( vec2(), 'vUv' ).assign( uv() ); // @TODO: Analyze other way to do this
+			varying(vec2(), 'vUv').assign(uv()); // @TODO: Analyze other way to do this
 
-			const instancePosition = attribute( 'instancePosition' );
+			const instancePosition = attribute('instancePosition');
 
 			// camera space
-			const mvPos = property( 'vec4', 'mvPos' );
-			mvPos.assign( modelViewMatrix.mul( vec4( instancePosition, 1.0 ) ) );
+			const mvPos = property('vec4', 'mvPos');
+			mvPos.assign(modelViewMatrix.mul(vec4(instancePosition, 1.0)));
 
-			const aspect = viewport.z.div( viewport.w );
+			const aspect = viewport.z.div(viewport.w);
 
 			// clip space
-			const clipPos = cameraProjectionMatrix.mul( mvPos );
+			const clipPos = cameraProjectionMatrix.mul(mvPos);
 
 			// offset in ndc space
-			const offset = property( 'vec2', 'offset' );
-			offset.assign( positionGeometry.xy );
-			offset.assign( offset.mul( materialPointWidth ) );
-			offset.assign( offset.div( viewport.z ) );
-			offset.y.assign( offset.y.mul( aspect ) );
+			const offset = property('vec2', 'offset');
+			offset.assign(positionGeometry.xy);
+			offset.assign(offset.mul(materialPointWidth));
+			offset.assign(offset.div(viewport.z));
+			offset.y.assign(offset.y.mul(aspect));
 
 			// back to clip space
-			offset.assign( offset.mul( clipPos.w ) );
+			offset.assign(offset.mul(clipPos.w));
 
 			//clipPos.xy += offset;
-			clipPos.assign( clipPos.add( vec4( offset, 0, 0 ) ) );
+			clipPos.assign(clipPos.add(vec4(offset, 0, 0)));
 
 			return clipPos;
 
 			//vec4 mvPosition = mvPos; // this was used for somethihng...
 
-		} )();
+		})();
 
-		this.fragmentNode = tslFn( () => {
+		this.fragmentNode = tslFn(() => {
 
-			const vUv = varying( vec2(), 'vUv' );
+			const vUv = varying(vec2(), 'vUv');
 
 			// force assignment into correct place in flow
-			const alpha = property( 'float', 'alpha' );
-			alpha.assign( 1 );
+			const alpha = property('float', 'alpha');
+			alpha.assign(1);
 
 			const a = vUv.x;
 			const b = vUv.y;
 
-			const len2 = a.mul( a ).add( b.mul( b ) );
+			const len2 = a.mul(a).add(b.mul(b));
 
-			if ( useAlphaToCoverage ) {
+			if (useAlphaToCoverage) {
 
 				// force assignment out of following 'if' statement - to avoid uniform control flow errors
-				const dlen = property( 'float', 'dlen' );
-				dlen.assign( len2.fwidth() );
+				const dlen = property('float', 'dlen');
+				dlen.assign(len2.fwidth());
 
-				alpha.assign( smoothstep( dlen.oneMinus(), dlen.add( 1 ), len2 ).oneMinus() );
+				alpha.assign(smoothstep(dlen.oneMinus(), dlen.add(1), len2).oneMinus());
 
 			} else {
 
-				len2.greaterThan( 1.0 ).discard();
+				len2.greaterThan(1.0).discard();
 
 			}
 
 			let pointColorNode;
 
-			if ( this.pointColorNode ) {
+			if (this.pointColorNode) {
 
 				pointColorNode = this.pointColorNode;
 
 			} else {
 
-				if ( useColor ) {
+				if (useColor) {
 
-					const instanceColor = attribute( 'instanceColor' );
+					const instanceColor = attribute('instanceColor');
 
-					pointColorNode = instanceColor.mul( materialColor );
+					pointColorNode = instanceColor.mul(materialColor);
 
 				} else {
 
@@ -130,9 +130,9 @@ class InstancedPointsNodeMaterial extends NodeMaterial {
 
 			}
 
-			return vec4( pointColorNode, alpha );
+			return vec4(pointColorNode, alpha);
 
-		} )();
+		})();
 
 		this.needsUpdate = true;
 
@@ -144,9 +144,9 @@ class InstancedPointsNodeMaterial extends NodeMaterial {
 
 	}
 
-	set alphaToCoverage( value ) {
+	set alphaToCoverage(value) {
 
-		if ( this.useAlphaToCoverage !== value ) {
+		if (this.useAlphaToCoverage !== value) {
 
 			this.useAlphaToCoverage = value;
 			this.setupShaders();
@@ -159,4 +159,4 @@ class InstancedPointsNodeMaterial extends NodeMaterial {
 
 export default InstancedPointsNodeMaterial;
 
-addNodeMaterial( 'InstancedPointsNodeMaterial', InstancedPointsNodeMaterial );
+addNodeMaterial('InstancedPointsNodeMaterial', InstancedPointsNodeMaterial);

@@ -4,7 +4,7 @@ import {
 	RepeatWrapping,
 	Vector2,
 	Vector3,
-} from 'three';
+} from '@semiconscious/three';
 
 /**
  * References:
@@ -65,8 +65,8 @@ const GTAOShader = {
 		thickness: { value: 1. },
 		distanceFallOff: { value: 1. },
 		scale: { value: 1. },
-		sceneBoxMin: { value: new Vector3( - 1, - 1, - 1 ) },
-		sceneBoxMax: { value: new Vector3( 1, 1, 1 ) },
+		sceneBoxMin: { value: new Vector3(- 1, - 1, - 1) },
+		sceneBoxMax: { value: new Vector3(1, 1, 1) },
 	},
 
 	vertexShader: /* glsl */`
@@ -336,30 +336,30 @@ const GTAOBlendShader = {
 };
 
 
-function generateMagicSquareNoise( size = 5 ) {
+function generateMagicSquareNoise(size = 5) {
 
-	const noiseSize = Math.floor( size ) % 2 === 0 ? Math.floor( size ) + 1 : Math.floor( size );
-	const magicSquare = generateMagicSquare( noiseSize );
+	const noiseSize = Math.floor(size) % 2 === 0 ? Math.floor(size) + 1 : Math.floor(size);
+	const magicSquare = generateMagicSquare(noiseSize);
 	const noiseSquareSize = magicSquare.length;
-	const data = new Uint8Array( noiseSquareSize * 4 );
+	const data = new Uint8Array(noiseSquareSize * 4);
 
-	for ( let inx = 0; inx < noiseSquareSize; ++ inx ) {
+	for (let inx = 0; inx < noiseSquareSize; ++inx) {
 
-		const iAng = magicSquare[ inx ];
-		const angle = ( 2 * Math.PI * iAng ) / noiseSquareSize;
+		const iAng = magicSquare[inx];
+		const angle = (2 * Math.PI * iAng) / noiseSquareSize;
 		const randomVec = new Vector3(
-			Math.cos( angle ),
-			Math.sin( angle ),
+			Math.cos(angle),
+			Math.sin(angle),
 			0
 		).normalize();
-		data[ inx * 4 ] = ( randomVec.x * 0.5 + 0.5 ) * 255;
-		data[ inx * 4 + 1 ] = ( randomVec.y * 0.5 + 0.5 ) * 255;
-		data[ inx * 4 + 2 ] = 127;
-		data[ inx * 4 + 3 ] = 255;
+		data[inx * 4] = (randomVec.x * 0.5 + 0.5) * 255;
+		data[inx * 4 + 1] = (randomVec.y * 0.5 + 0.5) * 255;
+		data[inx * 4 + 2] = 127;
+		data[inx * 4 + 3] = 255;
 
 	}
 
-	const noiseTexture = new DataTexture( data, noiseSize, noiseSize );
+	const noiseTexture = new DataTexture(data, noiseSize, noiseSize);
 	noiseTexture.wrapS = RepeatWrapping;
 	noiseTexture.wrapT = RepeatWrapping;
 	noiseTexture.needsUpdate = true;
@@ -368,30 +368,30 @@ function generateMagicSquareNoise( size = 5 ) {
 
 }
 
-function generateMagicSquare( size ) {
+function generateMagicSquare(size) {
 
-	const noiseSize = Math.floor( size ) % 2 === 0 ? Math.floor( size ) + 1 : Math.floor( size );
+	const noiseSize = Math.floor(size) % 2 === 0 ? Math.floor(size) + 1 : Math.floor(size);
 	const noiseSquareSize = noiseSize * noiseSize;
-	const magicSquare = Array( noiseSquareSize ).fill( 0 );
-	let i = Math.floor( noiseSize / 2 );
+	const magicSquare = Array(noiseSquareSize).fill(0);
+	let i = Math.floor(noiseSize / 2);
 	let j = noiseSize - 1;
 
-	for ( let num = 1; num <= noiseSquareSize; ) {
+	for (let num = 1; num <= noiseSquareSize;) {
 
-		if ( i === - 1 && j === noiseSize ) {
+		if (i === - 1 && j === noiseSize) {
 
 			j = noiseSize - 2;
 			i = 0;
 
 		} else {
 
-			if ( j === noiseSize ) {
+			if (j === noiseSize) {
 
 				j = 0;
 
 			}
 
-			if ( i < 0 ) {
+			if (i < 0) {
 
 				i = noiseSize - 1;
 
@@ -399,20 +399,20 @@ function generateMagicSquare( size ) {
 
 		}
 
-		if ( magicSquare[ i * noiseSize + j ] !== 0 ) {
+		if (magicSquare[i * noiseSize + j] !== 0) {
 
 			j -= 2;
-			i ++;
+			i++;
 			continue;
 
 		} else {
 
-			magicSquare[ i * noiseSize + j ] = num ++;
+			magicSquare[i * noiseSize + j] = num++;
 
 		}
 
-		j ++;
-		i --;
+		j++;
+		i--;
 
 	}
 

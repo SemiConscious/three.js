@@ -1,4 +1,4 @@
-import { MeshPhysicalMaterial } from 'three';
+import { MeshPhysicalMaterial } from '@semiconscious/three';
 
 /**
  * The aim of this mesh material is to use information from a post processing pass in the diffuse color pass.
@@ -25,14 +25,14 @@ import { MeshPhysicalMaterial } from 'three';
 
 class MeshPostProcessingMaterial extends MeshPhysicalMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		const aoPassMap = parameters.aoPassMap;
 		const aoPassMapScale = parameters.aoPassMapScale || 1.0;
 		delete parameters.aoPassMap;
 		delete parameters.aoPassMapScale;
 
-		super( parameters );
+		super(parameters);
 
 		this.onBeforeCompile = this._onBeforeCompile;
 		this.customProgramCacheKey = this._customProgramCacheKey;
@@ -48,7 +48,7 @@ class MeshPostProcessingMaterial extends MeshPhysicalMaterial {
 
 	}
 
-	set aoPassMap( aoPassMap ) {
+	set aoPassMap(aoPassMap) {
 
 		this._aoPassMap = aoPassMap;
 		this.needsUpdate = true;
@@ -62,11 +62,11 @@ class MeshPostProcessingMaterial extends MeshPhysicalMaterial {
 
 	}
 
-	_onBeforeCompile( shader ) {
+	_onBeforeCompile(shader) {
 
 		this._shader = shader;
 
-		if ( this._aoPassMap !== undefined && this._aoPassMap !== null ) {
+		if (this._aoPassMap !== undefined && this._aoPassMap !== null) {
 
 			shader.fragmentShader = shader.fragmentShader.replace(
 				'#include <aomap_pars_fragment>',
@@ -85,7 +85,7 @@ class MeshPostProcessingMaterial extends MeshPhysicalMaterial {
 
 	_setUniforms() {
 
-		if ( this._shader ) {
+		if (this._shader) {
 
 			this._shader.uniforms.tAoPassMap = { value: this._aoPassMap };
 			this._shader.uniforms.aoPassMapScale = { value: this.aoPassMapScale };

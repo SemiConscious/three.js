@@ -42,14 +42,14 @@
     <code>
 		///////////////////////////////////////////////////////
 		// Option 1: Import the entire three.js core library.
-		import * as THREE from 'three';
+		import * as THREE from '@semiconscious/three';
 
 		const scene = new THREE.Scene();
 
 
 		///////////////////////////////////////////////////////
 		// Option 2: Import just the parts you need.
-		import { Scene } from 'three';
+		import { Scene } from '@semiconscious/three';
 
 		const scene = new Scene();
 		</code>
@@ -87,7 +87,7 @@
 
 &lt;script type="module">
 
-    import * as THREE from 'three';
+    import * as THREE from '@semiconscious/three';
 
     const scene = new THREE.Scene();
 
@@ -131,7 +131,7 @@
 
 &lt;script type="module">
 
-    import * as THREE from 'three';
+    import * as THREE from '@semiconscious/three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     const controls = new OrbitControls( camera, renderer.domElement );
@@ -156,13 +156,13 @@
 
     <p>
         npm을 통해 설치하는 경우, 호스팅 및 CDN으로 설치했을 때와 import 경로가 다릅니다. 이 점은 양쪽의 사용자 모두에게 불편한 문제가 될 것이라는 점을 알고 있습니다.
-        빌드 도구나 번들러를 사용하는 개발자들은 상대경로보다 단순한 패키지 구분자(ex: 'three')로 사용하기를 선호하지만 <em>examples/</em> 폴더의 파일들은
+        빌드 도구나 번들러를 사용하는 개발자들은 상대경로보다 단순한 패키지 구분자(ex: '@semiconscious/three')로 사용하기를 선호하지만 <em>examples/</em> 폴더의 파일들은
         <em>three.module.js</em>에 상대 경로를 사용하기 때문에 예상을 빗나가게 됩니다. 빌드 도구를 사용하지 않는 사람들 — 빠른 프로토타입 제작, 학습용도, 개인적 취향 — 도 마찬가지로 이러한 상대 경로를 싫어할 텐데,
         특정 폴더 구조가 필요하고, 전역 <em>THREE.*</em>를 사용하는 것보다 엄격하기 때문입니다.
     </p>
 
     <p>
-        [link:https://github.com/WICG/import-maps import maps] 이 후에 활발하게 지원된다면 이러한 상대 경로들을 npm 패키지 이름, 'three'처럼 단순한 패키지 식별자로 변경할 예정입니다.
+        [link:https://github.com/WICG/import-maps import maps] 이 후에 활발하게 지원된다면 이러한 상대 경로들을 npm 패키지 이름, '@semiconscious/three'처럼 단순한 패키지 식별자로 변경할 예정입니다.
         이는 npm 패키지에서 주로 쓰이는 경로 작성법과 일치하고, 두 사용자군 모두에게 파일을 불러오는 데에 동일한 코드를 사용할 수 있게 해 줄 것입니다.
         빌드 도구를 사용하지 않는 것을 선호하는 사용자들에게도, 간단한 JSON 맵핑을 통해 CDN이나 직접 파일 폴더에서 불러오는 것을 가능하게 해 줄 것입니다.
         실험적 방법으로, [link:https://glitch.com/edit/#!/three-import-map?path=index.html import map

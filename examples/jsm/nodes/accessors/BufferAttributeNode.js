@@ -2,13 +2,13 @@ import InputNode from '../core/InputNode.js';
 import { addNodeClass } from '../core/Node.js';
 import { varying } from '../core/VaryingNode.js';
 import { nodeObject, addNodeElement } from '../shadernode/ShaderNode.js';
-import { InterleavedBufferAttribute, InterleavedBuffer, StaticDrawUsage, DynamicDrawUsage } from 'three';
+import { InterleavedBufferAttribute, InterleavedBuffer, StaticDrawUsage, DynamicDrawUsage } from '@semiconscious/three';
 
 class BufferAttributeNode extends InputNode {
 
-	constructor( value, bufferType = null, bufferStride = 0, bufferOffset = 0 ) {
+	constructor(value, bufferType = null, bufferStride = 0, bufferOffset = 0) {
 
-		super( value, bufferType );
+		super(value, bufferType);
 
 		this.isBufferNode = true;
 
@@ -21,7 +21,7 @@ class BufferAttributeNode extends InputNode {
 
 		this.attribute = null;
 
-		if ( value && value.isBufferAttribute === true ) {
+		if (value && value.isBufferAttribute === true) {
 
 			this.attribute = value;
 			this.usage = value.usage;
@@ -31,11 +31,11 @@ class BufferAttributeNode extends InputNode {
 
 	}
 
-	getNodeType( builder ) {
+	getNodeType(builder) {
 
-		if ( this.bufferType === null ) {
+		if (this.bufferType === null) {
 
-			this.bufferType = builder.getTypeFromAttribute( this.attribute );
+			this.bufferType = builder.getTypeFromAttribute(this.attribute);
 
 		}
 
@@ -43,36 +43,36 @@ class BufferAttributeNode extends InputNode {
 
 	}
 
-	setup( builder ) {
+	setup(builder) {
 
-		if ( this.attribute !== null ) return;
+		if (this.attribute !== null) return;
 
-		const type = this.getNodeType( builder );
+		const type = this.getNodeType(builder);
 		const array = this.value;
-		const itemSize = builder.getTypeLength( type );
+		const itemSize = builder.getTypeLength(type);
 		const stride = this.bufferStride || itemSize;
 		const offset = this.bufferOffset;
 
-		const buffer = array.isInterleavedBuffer === true ? array : new InterleavedBuffer( array, stride );
-		const bufferAttribute = new InterleavedBufferAttribute( buffer, itemSize, offset );
+		const buffer = array.isInterleavedBuffer === true ? array : new InterleavedBuffer(array, stride);
+		const bufferAttribute = new InterleavedBufferAttribute(buffer, itemSize, offset);
 
-		buffer.setUsage( this.usage );
+		buffer.setUsage(this.usage);
 
 		this.attribute = bufferAttribute;
 		this.attribute.isInstancedBufferAttribute = this.instanced; // @TODO: Add a possible: InstancedInterleavedBufferAttribute
 
 	}
 
-	generate( builder ) {
+	generate(builder) {
 
-		const nodeType = this.getNodeType( builder );
+		const nodeType = this.getNodeType(builder);
 
-		const nodeAttribute = builder.getBufferAttributeFromNode( this, nodeType );
-		const propertyName = builder.getPropertyName( nodeAttribute );
+		const nodeAttribute = builder.getBufferAttributeFromNode(this, nodeType);
+		const propertyName = builder.getPropertyName(nodeAttribute);
 
 		let output = null;
 
-		if ( builder.shaderStage === 'vertex' || builder.shaderStage === 'compute' ) {
+		if (builder.shaderStage === 'vertex' || builder.shaderStage === 'compute') {
 
 			this.name = propertyName;
 
@@ -80,9 +80,9 @@ class BufferAttributeNode extends InputNode {
 
 		} else {
 
-			const nodeVarying = varying( this );
+			const nodeVarying = varying(this);
 
-			output = nodeVarying.build( builder, nodeType );
+			output = nodeVarying.build(builder, nodeType);
 
 		}
 
@@ -90,13 +90,13 @@ class BufferAttributeNode extends InputNode {
 
 	}
 
-	getInputType( /*builder*/ ) {
+	getInputType( /*builder*/) {
 
 		return 'bufferAttribute';
 
 	}
 
-	setUsage( value ) {
+	setUsage(value) {
 
 		this.usage = value;
 
@@ -104,7 +104,7 @@ class BufferAttributeNode extends InputNode {
 
 	}
 
-	setInstanced( value ) {
+	setInstanced(value) {
 
 		this.instanced = value;
 
@@ -116,12 +116,12 @@ class BufferAttributeNode extends InputNode {
 
 export default BufferAttributeNode;
 
-export const bufferAttribute = ( array, type, stride, offset ) => nodeObject( new BufferAttributeNode( array, type, stride, offset ) );
-export const dynamicBufferAttribute = ( array, type, stride, offset ) => bufferAttribute( array, type, stride, offset ).setUsage( DynamicDrawUsage );
+export const bufferAttribute = (array, type, stride, offset) => nodeObject(new BufferAttributeNode(array, type, stride, offset));
+export const dynamicBufferAttribute = (array, type, stride, offset) => bufferAttribute(array, type, stride, offset).setUsage(DynamicDrawUsage);
 
-export const instancedBufferAttribute = ( array, type, stride, offset ) => bufferAttribute( array, type, stride, offset ).setInstanced( true );
-export const instancedDynamicBufferAttribute = ( array, type, stride, offset ) => dynamicBufferAttribute( array, type, stride, offset ).setInstanced( true );
+export const instancedBufferAttribute = (array, type, stride, offset) => bufferAttribute(array, type, stride, offset).setInstanced(true);
+export const instancedDynamicBufferAttribute = (array, type, stride, offset) => dynamicBufferAttribute(array, type, stride, offset).setInstanced(true);
 
-addNodeElement( 'toAttribute', ( bufferNode ) => bufferAttribute( bufferNode.value ) );
+addNodeElement('toAttribute', (bufferNode) => bufferAttribute(bufferNode.value));
 
-addNodeClass( 'BufferAttributeNode', BufferAttributeNode );
+addNodeClass('BufferAttributeNode', BufferAttributeNode);

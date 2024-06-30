@@ -1,72 +1,72 @@
 import { createNodeFromType } from '../core/Node.js';
 import { nodeObject } from '../shadernode/ShaderNode.js';
-import { FileLoader, Loader } from 'three';
+import { FileLoader, Loader } from '@semiconscious/three';
 
 class NodeLoader extends Loader {
 
-	constructor( manager ) {
+	constructor(manager) {
 
-		super( manager );
+		super(manager);
 
 		this.textures = {};
 
 	}
 
-	load( url, onLoad, onProgress, onError ) {
+	load(url, onLoad, onProgress, onError) {
 
-		const loader = new FileLoader( this.manager );
-		loader.setPath( this.path );
-		loader.setRequestHeader( this.requestHeader );
-		loader.setWithCredentials( this.withCredentials );
-		loader.load( url, ( text ) => {
+		const loader = new FileLoader(this.manager);
+		loader.setPath(this.path);
+		loader.setRequestHeader(this.requestHeader);
+		loader.setWithCredentials(this.withCredentials);
+		loader.load(url, (text) => {
 
 			try {
 
-				onLoad( this.parse( JSON.parse( text ) ) );
+				onLoad(this.parse(JSON.parse(text)));
 
-			} catch ( e ) {
+			} catch (e) {
 
-				if ( onError ) {
+				if (onError) {
 
-					onError( e );
+					onError(e);
 
 				} else {
 
-					console.error( e );
+					console.error(e);
 
 				}
 
-				this.manager.itemError( url );
+				this.manager.itemError(url);
 
 			}
 
-		}, onProgress, onError );
+		}, onProgress, onError);
 
 	}
 
-	parseNodes( json ) {
+	parseNodes(json) {
 
 		const nodes = {};
 
-		if ( json !== undefined ) {
+		if (json !== undefined) {
 
-			for ( const nodeJSON of json ) {
+			for (const nodeJSON of json) {
 
 				const { uuid, type } = nodeJSON;
 
-				nodes[ uuid ] = nodeObject( createNodeFromType( type ) ); // @TODO: Maybe nodeObjectify the node in createNodeFromType?
-				nodes[ uuid ].uuid = uuid;
+				nodes[uuid] = nodeObject(createNodeFromType(type)); // @TODO: Maybe nodeObjectify the node in createNodeFromType?
+				nodes[uuid].uuid = uuid;
 
 			}
 
 			const meta = { nodes, textures: this.textures };
 
-			for ( const nodeJSON of json ) {
+			for (const nodeJSON of json) {
 
 				nodeJSON.meta = meta;
 
-				const node = nodes[ nodeJSON.uuid ];
-				node.deserialize( nodeJSON );
+				const node = nodes[nodeJSON.uuid];
+				node.deserialize(nodeJSON);
 
 				delete nodeJSON.meta;
 
@@ -78,17 +78,17 @@ class NodeLoader extends Loader {
 
 	}
 
-	parse( json ) {
+	parse(json) {
 
-		const node = nodeObject( createNodeFromType( json.type ) );
+		const node = nodeObject(createNodeFromType(json.type));
 		node.uuid = json.uuid;
 
-		const nodes = this.parseNodes( json.nodes );
+		const nodes = this.parseNodes(json.nodes);
 		const meta = { nodes, textures: this.textures };
 
 		json.meta = meta;
 
-		node.deserialize( json );
+		node.deserialize(json);
 
 		delete json.meta;
 
@@ -96,7 +96,7 @@ class NodeLoader extends Loader {
 
 	}
 
-	setTextures( value ) {
+	setTextures(value) {
 
 		this.textures = value;
 		return this;

@@ -5,13 +5,13 @@ import { materialOpacity } from '../accessors/MaterialNode.js';
 import { transformedNormalView } from '../accessors/NormalNode.js';
 import { float, vec4 } from '../shadernode/ShaderNode.js';
 
-import { MeshNormalMaterial } from 'three';
+import { MeshNormalMaterial } from '@semiconscious/three';
 
 const defaultValues = new MeshNormalMaterial();
 
 class MeshNormalNodeMaterial extends NodeMaterial {
 
-	constructor( parameters ) {
+	constructor(parameters) {
 
 		super();
 
@@ -19,17 +19,17 @@ class MeshNormalNodeMaterial extends NodeMaterial {
 
 		this.colorSpaced = false;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
+		this.setValues(parameters);
 
 	}
 
 	setupDiffuseColor() {
 
-		const opacityNode = this.opacityNode ? float( this.opacityNode ) : materialOpacity;
+		const opacityNode = this.opacityNode ? float(this.opacityNode) : materialOpacity;
 
-		diffuseColor.assign( vec4( directionToColor( transformedNormalView ), opacityNode ) );
+		diffuseColor.assign(vec4(directionToColor(transformedNormalView), opacityNode));
 
 	}
 
@@ -37,4 +37,4 @@ class MeshNormalNodeMaterial extends NodeMaterial {
 
 export default MeshNormalNodeMaterial;
 
-addNodeMaterial( 'MeshNormalNodeMaterial', MeshNormalNodeMaterial );
+addNodeMaterial('MeshNormalNodeMaterial', MeshNormalNodeMaterial);

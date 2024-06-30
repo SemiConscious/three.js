@@ -7,12 +7,12 @@ import {
 	DepthTexture,
 	NearestFilter,
 	HalfFloatType
-} from 'three';
+} from '@semiconscious/three';
 import { Pass, FullScreenQuad } from './Pass.js';
 
 class RenderPixelatedPass extends Pass {
 
-	constructor( pixelSize, scene, camera, options = {} ) {
+	constructor(pixelSize, scene, camera, options = {}) {
 
 		super();
 
@@ -23,7 +23,7 @@ class RenderPixelatedPass extends Pass {
 		this.pixelatedMaterial = this.createPixelatedMaterial();
 		this.normalMaterial = new MeshNormalMaterial();
 
-		this.fsQuad = new FullScreenQuad( this.pixelatedMaterial );
+		this.fsQuad = new FullScreenQuad(this.pixelatedMaterial);
 		this.scene = scene;
 		this.camera = camera;
 
@@ -55,62 +55,62 @@ class RenderPixelatedPass extends Pass {
 
 	}
 
-	setSize( width, height ) {
+	setSize(width, height) {
 
-		this.resolution.set( width, height );
-		this.renderResolution.set( ( width / this.pixelSize ) | 0, ( height / this.pixelSize ) | 0 );
+		this.resolution.set(width, height);
+		this.renderResolution.set((width / this.pixelSize) | 0, (height / this.pixelSize) | 0);
 		const { x, y } = this.renderResolution;
-		this.beautyRenderTarget.setSize( x, y );
-		this.normalRenderTarget.setSize( x, y );
-		this.fsQuad.material.uniforms.resolution.value.set( x, y, 1 / x, 1 / y );
+		this.beautyRenderTarget.setSize(x, y);
+		this.normalRenderTarget.setSize(x, y);
+		this.fsQuad.material.uniforms.resolution.value.set(x, y, 1 / x, 1 / y);
 
 	}
 
-	setPixelSize( pixelSize ) {
+	setPixelSize(pixelSize) {
 
 		this.pixelSize = pixelSize;
-		this.setSize( this.resolution.x, this.resolution.y );
+		this.setSize(this.resolution.x, this.resolution.y);
 
 	}
 
-	render( renderer, writeBuffer ) {
+	render(renderer, writeBuffer) {
 
 		const uniforms = this.fsQuad.material.uniforms;
 		uniforms.normalEdgeStrength.value = this.normalEdgeStrength;
 		uniforms.depthEdgeStrength.value = this.depthEdgeStrength;
 
-		renderer.setRenderTarget( this.beautyRenderTarget );
-		renderer.render( this.scene, this.camera );
+		renderer.setRenderTarget(this.beautyRenderTarget);
+		renderer.render(this.scene, this.camera);
 
 		const overrideMaterial_old = this.scene.overrideMaterial;
-		renderer.setRenderTarget( this.normalRenderTarget );
+		renderer.setRenderTarget(this.normalRenderTarget);
 		this.scene.overrideMaterial = this.normalMaterial;
-		renderer.render( this.scene, this.camera );
+		renderer.render(this.scene, this.camera);
 		this.scene.overrideMaterial = overrideMaterial_old;
 
 		uniforms.tDiffuse.value = this.beautyRenderTarget.texture;
 		uniforms.tDepth.value = this.beautyRenderTarget.depthTexture;
 		uniforms.tNormal.value = this.normalRenderTarget.texture;
 
-		if ( this.renderToScreen ) {
+		if (this.renderToScreen) {
 
-			renderer.setRenderTarget( null );
+			renderer.setRenderTarget(null);
 
 		} else {
 
-			renderer.setRenderTarget( writeBuffer );
+			renderer.setRenderTarget(writeBuffer);
 
-			if ( this.clear ) renderer.clear();
+			if (this.clear) renderer.clear();
 
 		}
 
-		this.fsQuad.render( renderer );
+		this.fsQuad.render(renderer);
 
 	}
 
 	createPixelatedMaterial() {
 
-		return new ShaderMaterial( {
+		return new ShaderMaterial({
 			uniforms: {
 				tDiffuse: { value: null },
 				tDepth: { value: null },
@@ -226,7 +226,7 @@ class RenderPixelatedPass extends Pass {
 
 				}
 			`
-		} );
+		});
 
 	}
 
